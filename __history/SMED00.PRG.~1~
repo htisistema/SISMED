@@ -1,0 +1,594 @@
+#INCLUDE "wingdi.ch"
+#INCLUDE "winuser.ch"
+#INCLUDE "COMMCTRL.CH"
+#define RGB(nR,nG,nB) (nR + (nG * 256) + (nB * 256 * 256))
+
+#define NBotao1  900
+#define NBotao2  901
+#define NBotao3  902
+#define NBotao4  903
+#define NBotao5  904
+#define NBotao6  905
+#define NBotao7  906
+#define NBotao8  907
+#define NBotao9  908
+
+#define MENUARQ_1  1
+#define MENUARQ_2  2
+#define MENUARQ_3  3
+#define MENUARQ_4  4
+#define MENUARQ_5  5
+#define MENUARQ_6  6
+#define MENUARQ_7  7
+#define MENUARQ_8  8
+#define MENUARQ_9  9
+#define MENUARQ_10 10
+#define MENUARQ_11 11
+#define MENUARQ_12 12
+#define MENUARQ_13 13
+#define MENUARQ_14 14
+#define MENUARQ_15 15
+#define MENUARQ_16 16
+#define MENUARQ_18 18
+#define MENUARQ_19 19
+#define MENUARQ_20 20
+#define MENUARQ_21 21
+#define MENUARQ_22 22
+
+#define MENUMOV_1  30
+#define MENUMOV_2  31
+#define MENUMOV_3  32
+#define MENUMOV_4  33
+#define MENUMOV_5  34
+#define MENUMOV_6  35
+#define MENUMOV_7  36
+#define MENUMOV_8  40
+#define MENUMOV_9  42
+#define MENUMOV_10 43
+#define MENUMOV_11 44
+#define MENUMOV_12 47
+#define MENUMOV_13 49
+#define MENUMOV_14 50
+#define MENUMOV_15 51
+#define MENUMOV_16 52
+#define MENUMOV_17 53
+#define MENUMOV_18 54
+#define MENUMOV_19 55
+#define MENUMOV_20 56
+#define MENUMOV_21 57
+#define MENUMOV_22 58
+#define MENUMOV_23 59
+#define MENUMOV_24 60
+#define MENUMOV_25 61
+#define MENUMOV_26 62
+#define MENUMOV_27 63
+#define MENUMOV_28 64
+#define MENUMOV_29 65
+#define MENUMOV_30 66
+#define MENUMOV_31 67
+#define MENUMOV_32 68
+#define MENUMOV_33 69
+#define MENUMOV_34 70
+#define MENUMOV_35 71
+#define MENUMOV_36 72
+#define MENUMOV_37 73
+#define MENUMOV_38 74
+#define MENUMOV_39 75
+#define MENUMOV_40 76
+#define MENUMOV_41 77
+#define MENUMOV_42 78
+#define MENUMOV_43 79
+
+
+#define MENUCX_1  400
+#define MENUCX_2  401
+#define MENUCX_3  402
+#define MENUCX_4  403
+
+#define MENUCONS_1  500
+#define MENUCONS_2  501
+#define MENUCONS_3  502
+#define MENUCONS_4  503
+#define MENUCONS_5  504
+#define MENUCONS_6  505
+#define MENUCONS_7  506
+#define MENUCONS_8  507
+#define MENUCONS_9  508
+#define MENUCONS_10 509
+#define MENUCONS_11 510
+#define MENUCONS_12 511
+#define MENUCONS_13 512
+#define MENUCONS_14 513
+#define MENUCONS_15 514
+#define MENUCONS_16 515
+#define MENUCONS_17 516
+#define MENUCONS_18 517
+#define MENUCONS_19 518
+#define MENUCONS_20 519
+#define MENUCONS_21 520
+#define MENUCONS_22 521
+#define MENUCONS_23 522
+#define MENUCONS_24 523
+#define MENUCONS_25 524
+#define MENUCONS_26 525
+#define MENUCONS_27 526
+#define MENUCONS_28 527
+#define MENUCONS_29 528
+
+#define MENUREL_1  600
+#define MENUREL_2  601
+#define MENUREL_3  602
+#define MENUREL_4  603
+#define MENUREL_5  604
+#define MENUREL_6  605
+#define MENUREL_7  606
+#define MENUREL_8  607
+#define MENUREL_9  608
+#define MENUREL_10 609
+#define MENUREL_11 610
+#define MENUREL_12 611
+#define MENUREL_13 612
+#define MENUREL_14 613
+#define MENUREL_15 614
+#define MENUREL_16 615
+#define MENUREL_17 616
+#define MENUREL_18 617
+#define MENUREL_19 618
+#define MENUREL_20 619
+#define MENUREL_21 620
+#define MENUREL_22 621
+#define MENUREL_23 622
+#define MENUREL_24 623
+#define MENUREL_25 624
+#define MENUREL_26 625
+#define MENUREL_27 626
+#define MENUREL_28 627
+#define MENUREL_29 628
+#define MENUREL_30 629
+#define MENUREL_31 630
+#define MENUREL_32 631
+#define MENUREL_33 632
+#define MENUREL_34 633
+#define MENUREL_35 634
+#define MENUREL_36 635
+#define MENUREL_37 636
+#define MENUREL_38 637
+#define MENUREL_39 638
+#define MENUREL_40 639
+#define MENUREL_41 640
+#define MENUREL_42 641
+#define MENUREL_43 642
+#define MENUREL_44 643
+#define MENUREL_45 644
+#define MENUREL_46 645
+#define MENUREL_47 646
+#define MENUREL_48 647
+#define MENUREL_49 648
+#define MENUREL_50 649
+#define MENUREL_51 650
+#define MENUREL_52 651
+#define MENUREL_53 652
+#define MENUREL_54 653
+#define MENUREL_55 654
+
+#define MENUUTIL_1  700
+#define MENUUTIL_2  701
+#define MENUUTIL_3  702
+#define MENUUTIL_4  703
+#define MENUUTIL_5  704
+#define MENUUTIL_6  705
+#define MENUUTIL_7  706
+#define MENUUTIL_8  707
+#define MENUUTIL_9  708
+#define MENUUTIL_10 709
+#define MENUUTIL_11 710
+#define MENUUTIL_12 711
+
+#define MENUSAI_1 850
+
+*******************
+* MENU PRINCIPAL
+*******************
+FUNCTION smed0()
+***************
+MEMVAR mdata_sis,memp_resa,mversao,cod_operado,mcaminho,mol,sistema
+LOCAL opcao,tela,malinhar:={},aret:={},i:=0
+
+PUBLIC setah,setav,setcim := CHR(24),setbaix := CHR(25),setesq := CHR(27),setdir := CHR(26),;
+       rl_pd[15]
+
+PRIVATE mcod_vend,mmens
+
+SETCOLOR('W/B,B/w,,,GR/B')
+mnum_principal := op_tela(00,00,43,120,'.:'+m_set[1,23]+':.'+SPACE(40)+'.: SISMED '+mversao+' :.'+SPACE(40)+'Data:'+DTOC(mdata_sis)+'    ',1,,,)
+wvw_maximize(0)
+WVW_CenterWindow(,.T.,.T.)
+set key 23 to
+opcao:=0
+//m_cfg:={}
+//sr_getconnection():exec("SELECT * FROM saccfg WHERE terminal = "+sr_cdbvalue(m_cfg[1]),,.t.,@m_cfg)
+abriarq('saccfg','cfg')
+SETCOLOR('W/B+,B/w,,,GR+/B')
+SET KEY 287 TO alt_senha        // ALT+S
+botao(00,00,MAXROW(),MAXCOL())
+WVW_DrawImage( ,00,00,43,120,ALLTRIM(cfg->cam_banco)+'HTILOGO.JPG',.F.,.F.)
+WVW_DrawImage( ,32,55,39,115,ALLTRIM(cfg->cam_banco)+"rodape_pinpad.JPG",.F.,.F.)
+
+IF FILE(ALLTRIM(cfg->cam_banco)+'HTIFIRMA.JPG')
+        WVW_DrawImage( ,04,04,30,70,ALLTRIM(cfg->cam_banco)+'HTIFIRMA.JPG',.T.,.F.)
+ELSEIF FILE(ALLTRIM(cfg->cam_banco)+'HTIFIRMA1.JPG')
+        WVW_DrawImage( ,04,04,30,70,ALLTRIM(cfg->cam_banco)+'HTIFIRMA1.JPG',.T.,.F.)
+ENDIF
+
+botao(04,97,16,MAXCOL()-5)
+IF FILE(ALLTRIM(cfg->cam_banco)+cod_operado+'.jpg')
+        WVW_DrawImage( ,04,97,16,MAXCOL()-5,ALLTRIM(cfg->cam_banco)+cod_operado+'.jpg',.T.,.F.)
+ELSE
+        WVW_DrawImage( ,04,97,16,MAXCOL()-5,ALLTRIM(cfg->cam_banco)+'HTIUSU.JPG',.T.,.F.)
+ENDIF
+setcor(1)
+WVW_DrawLabel(,18,MAXCOL()-18,'Operador:'+cod_operado,,,RGB(25,25,112),RGB(255,250,250), 'times',18,8,,,,,)
+mtela_principal := WVW_SAVESCREEN(,00,00,48,120)
+exibi_prg('SMED0')
+WVW_TBCreate( , .T.,TBSTYLE_FLAT            , 0,55,50)
+WvW_PBSetFont( NIL, "ARIAL BLACK", 16, 0,)
+WVW_TBAddButton( ,NBotao1,ALLTRIM(cfg->cam_banco)+'cliente.bmp','<C>lientes',IF(FILE(ALLTRIM(cfg->cam_banco)+'cliente.bmp'),0,1))
+WVW_TBAddButton( ,MENUMOV_1,ALLTRIM(cfg->cam_banco)+'agenda_p.bmp','Agenda Pessoal',IF(FILE(ALLTRIM(cfg->cam_banco)+'agenda_p.bmp'),0,1))
+WVW_TBAddButton( ,MENUCONS_1,ALLTRIM(cfg->cam_banco)+'cons_conf.bmp','Consultas Confirmada',IF(FILE(ALLTRIM(cfg->cam_banco)+'cons_conf.bmp'),0,1),.F.)
+WVW_TBAddButton( ,MENUCX_1,ALLTRIM(cfg->cam_banco)+'conf_cons.bmp','Confirmacao Consulta',IF(FILE(ALLTRIM(cfg->cam_banco)+'conf_cons.bmp'),0,1),.F.)
+WVW_TBAddButton( ,MENUMOV_2,ALLTRIM(cfg->cam_banco)+'agenda_c.bmp','Agenda Consultas',IF(FILE(ALLTRIM(cfg->cam_banco)+'agenda_c.bmp'),0,1))
+*WVW_TBAddButton( ,MENUNF_9,ALLTRIM(cfg->cam_banco)+'nfe.bmp','<CTRL+E>NF-e',IF(FILE(ALLTRIM(cfg->cam_banco)+'nfe.bmp'),0,1))
+*WVW_TBAddButton( ,MENUNF_12,ALLTRIM(cfg->cam_banco)+'manutencao1.bmp','Manutencao NF-e',IF(FILE(ALLTRIM(cfg->cam_banco)+'recebimento.bmp'),0,1))
+*WVW_TBAddButton( ,MENUNF_16,ALLTRIM(cfg->cam_banco)+'nfce.bmp','<CTRL+F>NFC-e',IF(FILE(ALLTRIM(cfg->cam_banco)+'nfce.bmp'),0,1))
+*WVW_TBAddButton( ,MENUNF_23,ALLTRIM(cfg->cam_banco)+'manutencao1.bmp','Manutencao NFC-e',IF(FILE(ALLTRIM(cfg->cam_banco)+'orcamento.bmp'),0,1))
+*WVW_TBAddButton( ,NBotao5,ALLTRIM(cfg->cam_banco)+'produto.bmp','<P>rodutos',IF(FILE(ALLTRIM(cfg->cam_banco)+'produto.bmp'),0,1))
+*WVW_TBAddButton( ,MENUUTIL_76,ALLTRIM(cfg->cam_banco)+'gaveta.bmp','Abre GAVETA',IF(FILE(ALLTRIM(cfg->cam_banco)+'gaveta.bmp'),0,1))
+//WVW_TBAddButton( ,NBotao7,ALLTRIM(cfg->cam_banco)+'senhas.bmp','<D> Senha',IF(FILE(ALLTRIM(cfg->cam_banco)+'senhas.bmp'),0,1))
+WVW_TBAddButton( ,NBotao9,ALLTRIM(cfg->cam_banco)+'sair.bmp','<ESC> Sair',IF(FILE(ALLTRIM(cfg->cam_banco)+'sair.bmp'),0,1),.F.)
+
+WVW_SBCreate()
+WVW_SBAddPart(,,110,0,.F.)
+WVW_SBSetText(,1,'{SMED0}')
+WVW_SBAddPart(,,60,0,.F.)
+WVW_SBSetText(,2,' ')
+WVW_SBAddPart(,,270,0,.F.)
+//WVW_SBSetText(,3,'Empresa: '+ALLTRIM(mcodempresa)+'-'+SUBSTR(memp_resa,1,20))
+WVW_SBSetText(,3,' ')
+WVW_SBAddPart(,,80,0,.F.)
+WVW_SBSetText(,4,'Operador: '+ALLTRIM(cod_operado))
+WVW_SBAddPart(,,150,0,.F.)
+WVW_SBSetText(,5,'Term.: '+NETNAME())
+WVW_SBAddPart(,,235,0,.F.)
+WVW_SBSetText(,6,'   ** Banco: DBFCDX ** ')
+//WVW_SBSetText(,6,'IP:'+getip()+'   ** Banco: DBFCDX ** ')
+//WVW_SBSetText(,6,'.:HTI Informatica - (81)3325.6663/3755.1489:.')
+
+hMainMenu   = WVW_CreateMenu( )
+hSubMenu1   = WVW_CreateMenu( )
+hSubMenu2   = WVW_CreateMenu( )
+hSubMenu3    = WVW_CreateMenu( )
+hSubMenu4   = WVW_CreateMenu( )
+hSubMenu5   = WVW_CreateMenu( )
+hSubMenu6   = WVW_CreateMenu( )
+//hSubMenu7   = WVW_CreateMenu( )
+//hSubMenu8   = WVW_CreateMenu( )
+hSubMenu9   = WVW_CreateMenu( )
+
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu1   , "Arquivos",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu4   , "Consulta",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu2   , "Movimento",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu3   , "Caixa",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu5   , "Relatorios",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu6   , "Utilitarios",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_STRING , MENUUTIL_10 , "Ajuda",  )
+WVW_AppendMenu( hMainMenu   , MF_ENABLED + MF_POPUP , hSubMenu9   , "Sair",  )
+
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_1 , "0 -> Clientes               ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_2 , "1 -> Convenios              ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_3 , "2 -> Especialista (AGENDA)  ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_4 , "3 -> Medicos                ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_5 , "4 -> Especialidades         ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_6 , "5 -> Medicamentos           ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_7 , "6 -> Receitas               ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_8 , "7 -> Operador/Medicos       ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_9  , "8 ->Tabelas Precos         ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_10 , "9 ->Procedimentos A.M.B.   ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_11 , "A ->Diagnostico C.I.D.     ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_12 , "B ->Patologias             ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_13 , "C ->Cirurgias              ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_14 , "D ->Despesas               ",  )
+WVW_AppendMenu( hSubMenu1   , MF_ENABLED + MF_STRING , MENUARQ_15 , "E ->Contas Despesas        ",  )
+
+// MENU CONSULTA
+
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_1 , "0 -> Consultas Confirmada       ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_2 , "1 -> Clientes                   ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_3 , "2 -> Convenios                  ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_4 , "3 -> Especialista               ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_5 , "4 -> Medicamentos               ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_6 , "5 -> Exclusao de Consulta       ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_7 , "6 -> Consulta CEP               ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_8 , "7 -> Consulta Cirurgias         ",  )
+WVW_AppendMenu( hSubMenu4   , MF_ENABLED + MF_STRING , MENUCONS_9 , "8 -> Colposcopia                ",  )
+// MENU MOVIMENTO
+
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING ,MENUMOV_1 ,"0 -> Agenda Pessoal              ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING ,MENUMOV_2 ,"1 -> Agenda Consultas            ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING, MENUMOV_3 ,"2 -> Marcar Feriados             ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING, MENUMOV_4 ,"3 -> Exclusao de Agendas         ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING ,MENUMOV_5 ,"4 -> Cirurgias                   ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING ,MENUMOV_6 ,"5 -> Contas a Pagar              ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING, MENUMOV_7 ,"6 -> Baixa Doc. a Pagar          ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING, MENUMOV_8 ,"7 -> Contas a Receber            ",  )
+WVW_AppendMenu( hSubMenu2   , MF_ENABLED + MF_STRING ,MENUMOV_9 ,"8 -> Baixa Doc. a Receber        ",  )
+
+
+// MENU CAIXA
+
+WVW_AppendMenu( hSubMenu3   , MF_ENABLED + MF_STRING , MENUCX_1 ,  "0 -> Confirmacao de Consultas  ",  )
+WVW_AppendMenu( hSubMenu3   , MF_ENABLED + MF_STRING , MENUCX_2 ,  "1 -> Relatorio de Movimentacao ",  )
+WVW_AppendMenu( hSubMenu3   , MF_ENABLED + MF_STRING , MENUCX_3 ,  "2 -> Fechamento do Dia ",  )
+
+// MENU RELATORIO
+
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_1 ,  "0 -> Listagem Geral               ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_2 ,  "1 -> Listagem Faturas             ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_3 ,  "2 -> Listagem Consultas           ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_4 ,  "3 -> Receitas                     ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_5 ,  "4 -> Recibos                      ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_6 ,  "5 -> Atestado                     ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_7 ,  "6 -> Declaracao de Comparecimento ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_8  , "7 -> Pedido de Exames             ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_9  , "8 -> Cadastro e Historicos        ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_10 , "9 -> Relatorio de Despesas        ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_11 , "A -> Etiquetas em Geral           ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_12 , "B -> Listagem de Medicamentos     ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_13 , "C -> Listagem de Especialista     ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_14 , "D -> Listagem de Convenios        ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_15 , "E -> Estatisticas                 ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_16 , "F -> Canhoto de Recibos           ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_17 , "G -> Ficha Internamento           ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_18 , "H -> Guia Internamento  ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_19 , "I -> Consultas Marcadas ",  )
+WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_20 , "J -> Emissao Patologias ",  )
+//WVW_AppendMenu( hSubMenu5   , MF_ENABLED + MF_STRING , MENUREL_21 , "K -> T e x t o          ",  )
+WVW_AppendMenu( hSubMenu5   , IF(m_set[1,42] = '140201' .OR. m_set[1,42] = '140200',MF_ENABLED,MF_GRAYED) + MF_STRING , MENUREL_22 , "L -> Declaracao Gestante",  )
+WVW_AppendMenu( hSubMenu5   , IF(m_set[1,42] = '140201' .OR. m_set[1,42] = '140200',MF_ENABLED,MF_GRAYED) + MF_STRING , MENUREL_23 , "M -> Formularios Diversos",  )
+WVW_AppendMenu( hSubMenu5   , IF(m_set[1,42] = '140201' .OR. m_set[1,42] = '140200',MF_ENABLED,MF_GRAYED) + MF_STRING , MENUREL_24 , "N -> Colposcopia       ",  )
+WVW_AppendMenu( hSubMenu5   , IF(m_set[1,42] = '140201' .OR. m_set[1,42] = '140200',MF_ENABLED,MF_GRAYED) + MF_STRING , MENUREL_25 , "O -> Datas de Partos   ",  )
+//WVW_AppendMenu( hSubMenu5   , IF(cab_med = 'MARIO',MF_ENABLED,MF_GRAYED) + MF_STRING , MENUREL_26 , "P -> Exames de Videolaringoscopia",  )
+
+// MENU UTILITARIO
+
+WVW_AppendMenu( hSubMenu6   , MF_ENABLED + MF_STRING , MENUUTIL_1,  " Niveis de Acessos    ",  )
+WVW_AppendMenu( hSubMenu6   , MF_ENABLED + MF_STRING , MENUUTIL_2 , " Ler Arquivo DOS      ",  )
+WVW_AppendMenu( hSubMenu6   , MF_ENABLED + MF_STRING , MENUUTIL_3 , " Calculadora          ",  )
+//WVW_AppendMenu( hSubMenu6   , MF_ENABLED + MF_STRING , MENUUTIL_4 , " Calendario           ",  )
+WVW_AppendMenu( hSubMenu6   , MF_ENABLED + MF_STRING , MENUUTIL_5 , " Recibo da HTI        ",  )
+WVW_AppendMenu( hSubMenu6   , MF_ENABLED + MF_STRING , MENUUTIL_6 , " Informacoes HTI      ",  )
+
+
+
+WVW_AppendMenu( hSubMenu9   , MF_ENABLED + MF_STRING ,  MENUSAI_1, "Sair do Sistema",  )
+//WVW_AppendMenu( hSubMenu9   , MF_ENABLED + MF_STRING ,  MENUSAI_2, "Retornar ao Sistema",  )
+//WVW_AppendMenu( hSubMenu9   , MF_ENABLED + MF_STRING ,  MENUSAI_3, "Deixar na SENHA",  )
+
+WVW_SetMenu(, hMainMenu )
+
+SETINKEYAFTERBLOCK({|nkey| AfterInkey(nkey)})
+WHILE .T.
+        WVW_RESTSCREEN(,00,00,48,120,mtela_principal,.T.)
+        INKEY(0)
+        setcor(1)
+        IF LASTKEY() = 27
+                IF 'S' = op_simnao('N','Deseja FINALIZAR O SISTEMA:')
+                        EXIT
+                ENDIF
+        ELSEIF LASTKEY() = ASC('C') .OR. LASTKEY() = ASC('c')
+                IF(m_set[1,41]='1',f7_cli1('C'),f7_cli('C'))
+        ENDIF
+ENDDO
+fim('SISMED','*')
+RETURN NIL
+************************************** F I M *****************************************
+FUNCTION AfterInkey(nkey)
+**************************
+LOCAL MenuId,li,ci
+
+IF nKey=1024
+        setcor(1)
+        MenuId:=WVW_GETLASTMENUEVENT()
+        IF MenuId=NBotao1
+                IF(m_set[1,41]='1',f7_cli1('C'),f7_cli('C'))
+        ELSEIF MenuId=NBotao2  
+        ELSEIF MenuId=MENUARQ_1
+                IF(m_set[1,41]='1',f7_cli1('*'),f7_cli('*'))
+        ELSEIF MenuId=MENUARQ_2 
+                smed220()       && INCLUSAO CONVENIO
+        ELSEIF MenuId=MENUARQ_3 
+                smed230()
+        ELSEIF MenuId=MENUARQ_4 
+                f8_med('*')
+        ELSEIF MenuId=MENUARQ_5 
+                f9_espe('*')
+        ELSEIF MenuId=MENUARQ_6 
+                smed240()       && INCLUSAO REMEDIOS
+        ELSEIF MenuId=MENUARQ_7 
+                smed250()       && INCLUSAO receitas
+        ELSEIF MenuId=MENUARQ_8 
+                sacsenha('*')
+        ELSEIF MenuId=MENUARQ_9 
+                smed270()       && ALTERACAO DA TABELA DE PRECO
+        ELSEIF MenuId=MENUARQ_10
+                smed280()       && TABELA DA procedimentos AMB.
+        ELSEIF MenuId=MENUARQ_11
+                smed290()       && TABELA DA diagnostico CID.
+        ELSEIF MenuId=MENUARQ_12
+                smed2p()       && CADASTRO DE PATOLOGIAS
+        ELSEIF MenuId=MENUARQ_13
+                smed260()       && CADASTRO DE CIRURGIA
+        ELSEIF MenuId=MENUARQ_14
+                CLOSE ALL
+                abriarq('sacdesp','cdesp')
+                abriarq('sacforn','forn')
+                f6_forn('*')       && CADASTRO DE DESPESAS
+                CLOSE ALL
+        ELSEIF MenuId=MENUARQ_15
+                sacdesp()
+
+// CONSULTA
+
+        ELSEIF MenuId=MENUCONS_1  
+                smedcons()       && CONSULTA CLIENTES
+        ELSEIF MenuId=MENUCONS_2  
+                IF(m_set[1,41]='1',f7_cli1('C'),f7_cli('C'))
+                //smed310()       && CONSULTA CLIENTES
+        ELSEIF MenuId=MENUCONS_3  
+                smed320()       && CONSULTA CONVENIOS
+        ELSEIF MenuId=MENUCONS_4  
+                smed330()       && CONSULTA ESPECIALISTA
+        ELSEIF MenuId=MENUCONS_5 
+                smed340()       && CONSULTA MEDICAMENTOS
+        ELSEIF MenuId=MENUCONS_6 
+                smed350()       && EXCLUSAO DE CONSULTA
+        ELSEIF MenuId=MENUCONS_7 
+                saccep()       && CONSULTA CEP'S
+        ELSEIF MenuId=MENUCONS_8 
+                smed370()       && CONSULTA CIRURGIAS
+        ELSEIF MenuId=MENUCONS_9 
+                smed360()       && CONSULTA COLPOSCOPIA
+// MOVIMENTOS
+
+        ELSEIF MenuId=MENUMOV_1  // ENTRADA DE PRODUTOS
+                                        op_tela(10,20,14,55,'Agenda Pessoal')
+                                        li:=ci:=0
+                                        WHILE .T.
+                                                opcao := ' '
+                                                mensagem('Preencha os dados - <ESC> Abandonar')
+                                                setcor(1)
+                                                DEVPOS(li+1,ci+1);DEVOUT('Data do Compromisso:')
+                                                DEVPOS(li+2,ci+1);DEVOUT('Compromisso:')
+                                                DEVPOS(li+3,ci+1);DEVOUT('Opcao [I]ncluir [C]onsulta:')
+                                                setcor(3)
+                                                DEVPOS(li+1,ci+23);DEVOUT(DATE())
+                                                setcor(1)
+                                                @ li+3,ci+29 GET opcao PICT '@!' VALID opcao $ 'I,C'
+                                                READ
+                                                IF LASTKEY() = 27
+                                                        EXIT
+                                                ENDIF
+                                                
+                                                IF opcao = 'I'
+                                                        smed420()       && INCLUSAO AGENDA
+                                                ENDIF
+                                                IF opcao = 'C'
+                                                        smed410()       && CONSULTA AGENDA
+                                                ENDIF
+                                        ENDDO
+                                        wvw_lclosewindow()
+        ELSEIF MenuId=MENUMOV_2 
+                smed440()       && MARCAR CONSULTAS
+        ELSEIF MenuId=MENUMOV_3  
+                smed450()       && MARCAR FERIADOS
+        ELSEIF MenuId=MENUMOV_4  
+                smed430()       && EXCLUSAO AGENDA
+        ELSEIF MenuId=MENUMOV_5
+                smed470()       && AGENDA DE CIRURGIAS
+        ELSEIF MenuId=MENUMOV_6 // TROCA
+                con21()
+        ELSEIF MenuId=MENUMOV_7 // ROTINA DE SEGURANCA
+                con22()
+        ELSEIF MenuId=MENUMOV_8 // EMISSAO DE BOLETOS
+                con24()
+        ELSEIF MenuId=MENUMOV_9 //  MOVIMENTOS CONTA CORRENTE
+                con25()
+// CAIXA
+
+        ELSEIF MenuId=MENUCX_1  // RECEBIMENTO        
+                smed480()
+        ELSEIF MenuId=MENUCX_2  // RECEBIMENTOS DIVERSOS
+                smed481()
+        ELSEIF MenuId=MENUCX_3  // FECHAMENTO DO DIA
+                smed482()
+        ELSEIF MenuId=MENUCX_4  // COMFIRMA O PRESENCA HOSPEDE
+                smed483()
+
+// RELATORIO
+
+        ELSEIF MenuId=MENUREL_1  
+                smed510()               && LIST.GERAL
+        ELSEIF MenuId=MENUREL_2                     
+                smed530()               && FATURAS
+        ELSEIF MenuId=MENUREL_3 
+                smed530()               && LIST.CONSULTAS
+        ELSEIF MenuId=MENUREL_4  
+                smed540()               && RECEITAS
+        ELSEIF MenuId=MENUREL_5  
+                smed550()               && RECIBOS
+        ELSEIF MenuId=MENUREL_6 
+                smed560()               && ATESTADOS
+        ELSEIF MenuId=MENUREL_7    
+                smed580()               && DECLARACAO DE COMPARECIMENTO
+        ELSEIF MenuId=MENUREL_8 
+                smedexa(SPACE(35),CTOD('  /  /  '),1)   && PEDIDO DE EXAME
+        ELSEIF MenuId=MENUREL_9 
+                smed590()               && CADASTRO/HISTORICO CLINICO
+        ELSEIF MenuId=MENUREL_10 
+                smed5des()               && RELATORIO DE DESPESAS
+        ELSEIF MenuId=MENUREL_11 
+                smed5etq()               && ETIQUETAS DE CLIENTES
+        ELSEIF MenuId=MENUREL_12 
+                smed591()               && LIST. MEDICAMENTOS
+        ELSEIF MenuId=MENUREL_13 
+                smed592()               && LIST. ESPECIALISTAS
+        ELSEIF MenuId=MENUREL_14 
+                smed5cnv()              && LIST. CONVENIOS
+        ELSEIF MenuId=MENUREL_15 
+                smed593()               && ESTATISTICAS
+        ELSEIF MenuId=MENUREL_16 
+                smed594()               && CANHOTO DE RECIBO
+        ELSEIF MenuId=MENUREL_17       
+                smed595()               && FICHA DE INTERNAMENTO
+        ELSEIF MenuId=MENUREL_18  
+                smedguia()               && GUIA DE INTERNAMENTO
+        ELSEIF MenuId=MENUREL_19    
+                smed5con()               &&RELATORIO CONSULTAS MARCADAS
+        ELSEIF MenuId=MENUREL_20       
+                smed5pat()               && EMISSAO DE PATOLOGIAS
+        //ELSEIF MenuId=MENUREL_21
+        //        texto()               && TEXTOS
+        ELSEIF MenuId=MENUREL_22 
+                smed5decl()
+        ELSEIF MenuId=MENUREL_23 
+                smed5frm()
+        ELSEIF MenuId=MENUREL_24
+                smed5col()
+        ELSEIF MenuId=MENUREL_25
+                smed5dat()
+        ELSEIF MenuId=MENUREL_26
+                smed5vid()
+
+// UTILITARIO
+
+        ELSEIF MenuId=MENUUTIL_1  
+                f3_nivel()
+        ELSEIF MenuId=MENUUTIL_2  
+                sacler()
+        ELSEIF MenuId=MENUUTIL_3  
+                calcu()
+        //ELSEIF MenuId=MENUUTIL_4
+        //        cale()
+        ELSEIF MenuId=MENUUTIL_5 
+                sac63()
+        ELSEIF MenuId=MENUUTIL_6 
+                //tela1 = SAVESCREEN(01,00,24,79)
+                //tela(sistema,1)
+                //mensagem('Pressione qualquer tecla p/continuar')
+                //INKEY(0)
+                //RESTSCREEN(01,00,24,79,tela1)
+        ELSEIF MenuId=MENUSAI_1 .OR. MenuId = NBotao9 .OR. MenuId = 27
+                fim(sistema+'('+mversao+')')
+
+        ENDIF
+ENDIF
+RETURN nkey

@@ -1,0 +1,422 @@
+* EMISSAO DO CADASTRO CLIENTES
+*************************************************
+FUNCTION smed590
+****************
+LOCAL mprg:='SMED590',lba,cba,opcao,mnome,mtela,marea_fin,marea_cli
+PRIVATE mrsoc,traco := REPLI('-',80),mtipo_imp,mimp_tipo:=0,;
+        mporta_imp,marq:=SPACE(35),mrsoc:='',mmod,mfator,mprazo,mvalor,;
+        opchist,opcexam,opcdiag,opccond,mcod_cli:=''
+
+IF ! ver_nivel(mprg,'EMISSAO DO CADASTRO CLIENTES','1234',nivel_acess)
+        RETURN NIL
+ENDIF
+********* VARIAVEIS DE IMPRESSAO *******************
+mtipo_imp := 'M'
+****************************************************
+CLOSE ALL
+abriarq('saccfg','cfg')
+abriarq('smedcli','cli')
+abriarq('smedconv','conv')
+abriarq('smedtab','tab')
+abriarq('smedcond','cond')
+abriarq('smeddiag','diag')
+abriarq('smedhist','hist')
+abriarq('smedexam','exam')
+********************************************
+lba := 21
+cba := 74
+op_tela(16,24,33,74,'EMISSAO DO CADASTRO CLIENTES')
+WHILE .T.
+        mcont := opcaohis := 0
+        opchist := opcexam := opcdiag := opccond := marea_fin := marea_cli := opcao := SPACE(1)
+        mnome := SPACE(35)
+        mrsoc := SPACE(30)
+        setcor(1)
+        *****************
+        SELE('cli');SET ORDER TO 1
+        *****************
+        Mensagem('Preencha o Campo ou Tecle <ESC> P/Retornar')
+        DEVPOS(1,2);DEVOUT('Nome......:')
+        DEVPOS(2,2);DEVOUT('Registro..:')
+        DEVPOS(3,2);DEVOUT('Data......:')
+        DEVPOS(4,2);DEVOUT('Cod.Conv..:')
+        DEVPOS(5,2);DEVOUT('Convenio..:')
+        DEVPOS(6,2);DEVOUT('Dat.Nasc..:')
+        DEVPOS(7,2);DEVOUT('Idade.....:')
+        DEVPOS(8,2);DEVOUT('Sexo......:')
+
+        DEVPOS(10,2);DEVOUT('Historia Clinica [S/N].....:')
+        DEVPOS(11,2);DEVOUT('Exame Clinico [S/N]........:')
+        DEVPOS(12,2);DEVOUT('Hipotese Diagnostico [S/N].:')
+        DEVPOS(13,2);DEVOUT('Conduta Medica [S/N].......:')
+        SET INTEN ON
+        IF(m_set[1,41]='1',f7_cli1(),f7_cli())
+        IF LASTKEY() = 27
+                EXIT
+        ENDIF
+        mcconv := codconv
+        vcconv(@mcconv)
+        Mensagem('<ESC> Retornar - <ENTER> Imprimir - <'+setcim+'> Prox.Reg. - <'+setbaix+'> Reg.Ant.')
+        *****************
+        SELE('cli');SET ORDER TO 1
+        *****************
+        setcor(3)
+        DEVPOS(1,14);DEVOUT(nome)
+        DEVPOS(2,14);DEVOUT(registro)
+        DEVPOS(3,14);DEVOUT(DTOC(data))
+        DEVPOS(4,14);DEVOUT(codconv)
+        DEVPOS(5,14);DEVOUT(mrsoc)
+        DEVPOS(6,14);DEVOUT(DTOC(datans))
+        DEVPOS(7,14);DEVOUT(STR(INT((DATE() - datans)/365),2))
+        DEVPOS(8,14);DEVOUT(sexo)
+        setcor(1)
+        @ 10,30 GET opchist PICT '@!' VALID opchist $ 'S,N' WHEN IF(nivel('1','2'),.T.,.F.)
+        @ 11,30 GET opcexam PICT '@!' VALID opcexam $ 'S,N' WHEN IF(nivel('1','2'),.T.,.F.)
+        @ 12,30 GET opcdiag PICT '@!' VALID opcdiag $ 'S,N' WHEN IF(nivel('1','2'),.T.,.F.)
+        @ 13,30 GET opccond PICT '@!' VALID opccond $ 'S,N' WHEN IF(nivel('1','2'),.T.,.F.)
+        READ
+        IF LASTKEY() = 27
+                LOOP
+        ENDIF
+
+        //IF ! imp_arq('SMED590.REL')
+        IF ! imp_arq('HTI.REL')
+                LOOP
+        ENDIF
+        vcconv(cli->codconv ,,,1)
+        cabec()
+        @ PROW()+3,28 SAY 'REGISTRO DE CLIENTE'
+        DEVPOS(PROW()+3,1 );DEVOUT('Registro.........:')
+        @ PROW(),PCOL()+1 SAY cli->registro
+        DEVPOS(PROW(),PCOL()+5);DEVOUT('Data Cadastro:')
+        @ PROW(),PCOL()+1 SAY DTOC(cli->data)
+        DEVPOS(PROW()+2,1 );DEVOUT('Nome CLIENTE.....:')
+        @ PROW(),PCOL()+1 SAY cli->nome
+        DEVPOS(PROW()+2,1);DEVOUT('Endereco..........:')
+        @ PROW(),PCOL()+1 SAY cli->endereco
+        DEVPOS(PROW()+1,1);DEVOUT('Numero............:')
+        @ PROW(),PCOL()+1 SAY cli->numero
+        DEVPOS(PROW(),28);DEVOUT('Complemento:')
+        @ PROW(),PCOL()+1 SAY cli->complement
+        DEVPOS(PROW()+1,1);DEVOUT('Bairro............:')
+        @ PROW(),PCOL()+1 SAY cli->bairro
+        DEVPOS(PROW()+1,1);DEVOUT('Cidade............:')
+        @ PROW(),PCOL()+1 SAY cli->cidade
+        DEVPOS(PROW(),48);DEVOUT('UF:')
+        @ PROW(),PCOL()+1 SAY cli->est
+        DEVPOS(PROW()+1,1);DEVOUT('CEP...............:')
+        @ PROW(),PCOL()+1 SAY cli->cep PICT '99999-999'
+        DEVPOS(PROW()+1,1);DEVOUT('Fone..............:')
+        @ PROW(),PCOL()+1 SAY cli->fone
+        DEVPOS(PROW()+1,1);DEVOUT('Fone 1............:')
+        @ PROW(),PCOL()+1 SAY cli->fone1
+        DEVPOS(PROW()+1,1);DEVOUT('Estado Civil......:')
+        @ PROW(),PCOL()+1 SAY cli->estcivil
+        imprt('M','C')
+        DEVPOS(PROW(),41);DEVOUT('[1]Solteiro [2]Casado [3]Divorciado [4]Viuvo [5]Separado')
+        imprt('M','N')
+
+        DEVPOS(PROW()+1,1);DEVOUT('Natural...........:')
+        @ PROW(),PCOL()+1 SAY cli->natural1
+        DEVPOS(PROW()+1,1);DEVOUT('CPF...............:')
+        @ PROW(),PCOL()+1 SAY cli->cpf PICT '@!@R 999.999.999-99'
+        DEVPOS(PROW()+1,1);DEVOUT('R.G...............:')
+        @ PROW(),PCOL()+1 SAY cli->rg
+        DEVPOS(PROW()+1,1);DEVOUT('Data Nascimento...:')
+        @ PROW(),PCOL()+1 SAY DTOC(cli->datans)
+        DEVPOS(PROW()+1,1);DEVOUT('Sexo..............:')
+        @ PROW(),PCOL()+1 SAY cli->sexo
+        imprt('M','C')
+        DEVPOS(PROW(),41);DEVOUT('[1]Masculino [2]Feminino')
+        imprt('M','N')
+        DEVPOS(PROW()+1,1);DEVOUT('Como se Considera.:')
+        @ PROW(),PCOL()+1 SAY cli->genero
+        imprt('M','C')
+        DEVPOS(PROW(),41);DEVOUT('[1]Homem [2]Mulher [3]Travesti [4]Transexual [5]Outros')
+        imprt('M','N')
+        DEVPOS(PROW()+1,1);DEVOUT('Raca/Cor..........:')
+        @ PROW(),PCOL()+1 SAY cli->cor
+        imprt('M','C')
+        DEVPOS(PROW(),41);DEVOUT('[1]Preta [2]Branca [3]Prada [4]Outra')
+        imprt('M','N')
+
+        DEVPOS(PROW()+1,1);DEVOUT('Escolaridade......:')
+        @ PROW(),PCOL()+1 SAY cli->escolar
+        imprt('M','C')
+        DEVPOS(PROW(),41);DEVOUT('[1]Nunca estudou [2]Alfabetizacao/1o.ano [3]Fund.incompleto [4]Fund.completo [5]Medio incompleto')
+        DEVPOS(PROW()+1,40);DEVOUT('[6]Medio completo [7]Superior incompleto [8]Superior completo')
+        imprt('M','N')
+        DEVPOS(PROW()+1,1);DEVOUT('Empresa Trabalho..:')
+        @ PROW(),PCOL()+1 SAY cli->emp_cli
+        DEVPOS(PROW()+1,1);DEVOUT('Profissao.........:')
+        @ PROW(),PCOL()+1 SAY cli->profissao
+        DEVPOS(PROW()+1,1);DEVOUT('Responsavel.......:')
+        @ PROW(),PCOL()+1 SAY cli->resp
+        DEVPOS(PROW()+1,1);DEVOUT('Fone..............:')
+        @ PROW(),PCOL()+1 SAY cli->fone2
+        DEVPOS(PROW()+1,1);DEVOUT('Indicado Por......:')
+        @ PROW(),PCOL()+1 SAY cli->indica
+        DEVPOS(PROW()+1,1);DEVOUT('Conjuge...........:')
+        @ PROW(),PCOL()+1 SAY cli->conjuge
+        DEVPOS(PROW()+1,1);DEVOUT('Fone..............:')
+        @ PROW(),PCOL()+1 SAY cli->fone_conj
+        DEVPOS(PROW()+1,1);DEVOUT('Codigo Convenio...:')
+        @ PROW(),PCOL()+1 SAY cli->codconv +' - '+mrsoc
+        DEVPOS(PROW()+1,1);DEVOUT('Plano.............:')
+        @ PROW(),PCOL()+1 SAY cli->plano
+        DEVPOS(PROW()+1,1);DEVOUT('No.do Cartao......:')
+        @ PROW(),PCOL()+1 SAY cli->empresa
+        DEVPOS(PROW()+1,1);DEVOUT('Validade..........:')
+        @ PROW(),PCOL()+1 SAY DTOC(cli->val_cart)
+        //atencao('ok')
+        IF marea_fin = 'S'
+                DEVPOS(PROW()+1,1);DEVOUT('Valor da Diaria R$:')
+                @ PROW(),PCOL()+1 SAY cli->valor PICT '999,999.99'
+        ENDIF
+        DEVPOS(PROW()+1,1);DEVOUT('Data Internamento.:')
+        @ PROW(),PCOL()+1 SAY DTOC(cli->dat_inter)
+        DEVPOS(PROW()+1,1);DEVOUT('Terapeuta.........:')
+        @ PROW(),PCOL()+1 SAY cli->terapeuta
+        DEVPOS(PROW()+1,1);DEVOUT('Telefone..........:')
+        @ PROW(),PCOL()+1 SAY cli->fone_tera
+        DEVPOS(PROW()+1,1);DEVOUT('Medico............:')
+        @ PROW(),PCOL()+1 SAY cli->medico
+        DEVPOS(PROW()+1,1);DEVOUT('Telefone..........:')
+        @ PROW(),PCOL()+1 SAY cli->fone_med
+        DEVPOS(PROW()+1,1);DEVOUT('Observacao........:')
+        @ PROW()  ,21 SAY cli->obs1
+        @ PROW()+1,21 SAY cli->obs2
+        @ PROW()+1,21 SAY cli->obs3
+        @ PROW()+1,21 SAY cli->obs4
+        //DEVPOS(PROW()+1,1);DEVOUT('DADOS COMPLEMENTARES')
+        IF marea_cli = 'S'
+                DEVPOS(PROW()+1,1);DEVOUT('Uso de medicacao durante internacao:')
+                @ PROW(),PCOL()+1 SAY cli->med_inter
+                imprt('M','C')
+                DEVPOS(PROW(),68);DEVOUT('[1]Antidepressivo [2]Ansioliticos [3]Neurolepticos')
+                DEVPOS(PROW()+1,67);DEVOUT('[4]Indutores do sono [5]Anfetaminicos [6]Outros')
+                imprt('M','N')
+                DEVPOS(PROW()+1,1);DEVOUT('USO DE SUBSTANCIAS PSICOATIVAS')
+                DEVPOS(PROW()+1,1);DEVOUT('Substancia........:')
+                @ PROW(),PCOL()+1 SAY cli->substancia
+                imprt('M','C')
+                DEVPOS(PROW(),44);DEVOUT('[1]Alccol [2]Tabaco [3]Maconha [4]Cocaina [5]Crack ')
+                DEVPOS(PROW()+1,43);DEVOUT('[6]Anfetamina [7]Ansiolitico [8]Opioides [9]Outras')
+                imprt('M','N')
+                DEVPOS(PROW()+1,1);DEVOUT('Tempo de Uso......:')
+                @ PROW(),PCOL()+1 SAY cli->tempo_uso
+                DEVPOS(PROW(),PCOL()+1);DEVOUT('Tempo de Abuso:')
+                @ PROW(),PCOL()+1 SAY cli->tempo_abus
+                DEVPOS(PROW()+1,1);DEVOUT('Uso Habitual de Outro(s)SPA(s):')
+                @ PROW()+1,1 SAY cli->outro_spa
+                DEVPOS(PROW()+1,1);DEVOUT('Comorbidades......:')
+                @ PROW(),PCOL()+1 SAY cli->comorbidad
+                DEVPOS(PROW()+1,1);DEVOUT('Internamento(s) anteriore(s): (local/tempo/motivo da alta)')
+                @ PROW()+1,1 SAY cli->inter_ant
+        ENDIF
+        EJECT
+        IF opchist = 'S'
+                mpag = 1
+                cabec()
+                cabhist('HISTORIA CLINICA')
+	        m_historico:={}
+        	sr_getconnection():exec("SELECT * FROM smedhist WHERE codcli = "+sr_cdbvalue(cli->registro)+" ORDER BY data,hora",,.t.,@m_historico)
+	        IF LEN(m_historico) > 0
+        	        i := 0
+                	@ PROW()+1,0 SAY PADR(RTRIM('Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']'),80)
+        	        mdata_con := m_historico[1,1]
+                	i++
+	                FOR i = 2 TO LEN(m_historico)
+        	                IF mdata_con = m_historico[i,1]
+		                	@ PROW()+1,0 SAY PADR(RTRIM('                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']'),80)
+	                        ELSE
+        	                        @ PROW()+1,0 SAY PADR(RTRIM(REPLI('-',73)),80)
+		                	@ PROW()+1,0 SAY PADR(RTRIM('Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']'),80)
+	                                mdata_con := m_historico[i,1]
+        	                ENDIF
+	                        IF PROW() = 41
+        	                        mpag = mpag +1
+                	                @ PROW()+1,1 SAY PADC(mpag,80)
+                        	        @ 60,00 SAY traco
+                                	EJECT
+	                                cabec()
+        	                        cabhist('HISTORIA CLINICA')
+                	        ENDIF
+                	NEXT
+	                @ PROW()+2,1 SAY PADC('****************************  F  I  M  ****************************',73)
+	        ENDIF
+                @ PROW()+3,30 SAY 'Recife,'
+                @ PROW(),37 SAY DATE()
+                @ PROW()+3,00 SAY PADC(REPLI('-',LEN(m_set[1,23])),80)
+                @ PROW()+1,00 SAY PADC(m_set[1,23],80)
+                //@ PROW()+1,00 SAY PADC(crm,80)
+                rodape()
+                @ 42,00 SAY PADC(mpag,80)
+                EJECT
+        ENDIF
+        IF opcexam = 'S'
+                mpag = 1
+                cabec()
+                cabhist('EXAME CLINICO')
+	        m_historico:={}
+        	sr_getconnection():exec("SELECT * FROM smedexam WHERE codcli = "+sr_cdbvalue(cli->registro)+" ORDER BY data,hora",,.t.,@m_historico)
+	        IF LEN(m_historico) > 0
+        	        i := 0
+                	@ PROW()+1,1 SAY 'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']'
+        	        mdata_con := m_historico[1,1]
+                	i++
+	                FOR i = 2 TO LEN(m_historico)
+        	                IF mdata_con = m_historico[i,1]
+		                	@ PROW()+1,1 SAY '                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']'
+	                        ELSE
+        	                        @ PROW()+1,1 SAY REPLI('-',73)
+		                	@ PROW()+1,1 SAY 'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']'
+	                                mdata_con := m_historico[i,1]
+        	                ENDIF
+	                        IF PROW() = 41
+        	                        mpag = mpag +1
+                	                @ PROW()+1,1 SAY PADC(mpag,80)
+                        	        @ 60,00 SAY traco
+                                	EJECT
+	                                cabec()
+        	                        cabhist('EXAME CLINICO')
+                	        ENDIF
+                	NEXT
+	                @ PROW()+2,1 SAY PADC('****************************  F  I  M  ****************************',73)
+	        ENDIF
+                @ PROW()+3,30 SAY 'Recife,'
+                @ PROW(),37 SAY DATE()
+                @ PROW()+3,00 SAY PADC(REPLI('-',LEN(m_set[1,23])),80)
+                @ PROW()+1,00 SAY PADC(m_set[1,23],80)
+                //@ PROW()+1,00 SAY PADC(crm,80)
+                rodape()
+                @ 42,00 SAY PADC(mpag,80)
+                EJECT
+        ENDIF
+        IF opcdiag = 'S'
+                mpag = 1
+                cabec()
+                cabhist('HIPOTESE DIAGNOSTICO')
+	        m_historico:={}
+        	sr_getconnection():exec("SELECT * FROM smeddiag WHERE codcli = "+sr_cdbvalue(cli->registro)+" ORDER BY data,hora",,.t.,@m_historico)
+	        IF LEN(m_historico) > 0
+        	        i := 0
+                	@ PROW()+1,1 SAY 'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']'
+        	        mdata_con := m_historico[1,1]
+                	i++
+	                FOR i = 2 TO LEN(m_historico)
+        	                IF mdata_con = m_historico[i,1]
+		                	@ PROW()+1,1 SAY '                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']'
+	                        ELSE
+        	                        @ PROW()+1,1 SAY REPLI('-',73)
+		                	@ PROW()+1,1 SAY 'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']'
+	                                mdata_con := m_historico[i,1]
+        	                ENDIF
+	                        IF PROW() = 41
+        	                        mpag = mpag +1
+                	                @ PROW()+1,1 SAY PADC(mpag,80)
+                        	        @ 60,00 SAY traco
+                                	EJECT
+	                                cabec()
+        	                        cabhist('HIPOTESE DIAGNOSTICO')
+                	        ENDIF
+                	NEXT
+	                @ PROW()+2,1 SAY PADC('****************************  F  I  M  ****************************',73)
+	        ENDIF
+                @ PROW()+3,30 SAY 'Recife,'
+                @ PROW(),37 SAY DATE()
+                @ PROW()+3,00 SAY PADC(REPLI('-',LEN(m_set[1,23])),80)
+                @ PROW()+1,00 SAY PADC(m_set[1,23],80)
+                //@ PROW()+1,00 SAY PADC(crm,80)
+                rodape()
+                @ 42,00 SAY PADC(mpag,80)
+                EJECT
+        ENDIF
+        IF opccond = 'S'
+                mpag = 1
+                cabec()
+                cabhist('CONDUTA MEDICA')
+	        m_historico:={}
+        	sr_getconnection():exec("SELECT * FROM smedcond WHERE codcli = "+sr_cdbvalue(cli->registro)+" ORDER BY data,hora",,.t.,@m_historico)
+	        IF LEN(m_historico) > 0
+        	        i := 0
+                	@ PROW()+1,1 SAY 'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']'
+        	        mdata_con := m_historico[1,1]
+                	i++
+	                FOR i = 2 TO LEN(m_historico)
+        	                IF mdata_con = m_historico[i,1]
+		                	@ PROW()+1,1 SAY '                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']'
+	                        ELSE
+        	                        @ PROW()+1,1 SAY REPLI('-',73)
+		                	@ PROW()+1,1 SAY 'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']'
+	                                mdata_con := m_historico[i,1]
+        	                ENDIF
+	                        IF PROW() = 41
+        	                        mpag = mpag +1
+                	                @ PROW()+1,1 SAY PADC(mpag,80)
+                        	        @ 60,00 SAY traco
+                                	EJECT
+	                                cabec()
+        	                        cabhist('CONDUTA MEDICA')
+                	        ENDIF
+                	NEXT
+	                @ PROW()+2,1 SAY PADC('****************************  F  I  M  ****************************',73)
+	        ENDIF
+                @ PROW()+3,30 SAY 'Recife,'
+                @ PROW(),37 SAY DATE()
+                @ PROW()+3,00 SAY PADC(REPLI('-',LEN(m_set[1,23])),80)
+                @ PROW()+1,00 SAY PADC(m_set[1,23],80)
+                //@ PROW()+1,00 SAY PADC(crm,80)
+                rodape()
+                @ 42,00 SAY PADC(mpag,80)
+                EJECT
+        ENDIF
+        SET DEVI TO SCREEN;SET PRINT TO;SET PRINT OFF
+        conf_impressao('HTI.REL')
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+********************** f i m **********************************************************
+FUNCTION histcab(mtit,mp)
+WHILE .T.
+        @ PROW(),00 SAY m_set[1,23]
+        @ PROW(),00 SAY PADL(DATE(),80)
+        @ PROW()+1,00 SAY 'HISTORICO GERAL DO CLIENTE'
+        @ PROW(),00 SAY PADL('Pag.: '+STRZERO(mp,3),80)
+        @ PROW()+1,00 SAY traco
+        @ PROW()+1,00 SAY 'Reg.:'
+        @ PROW(),PCOL()+1 SAY registro
+        @ PROW(),PCOL()+2 SAY 'Nome:'
+        @ PROW(),PCOL()+1 SAY nome
+        @ PROW(),PCOL()+2 SAY 'Data Nasc.:'
+        @ PROW(),PCOL()+1 SAY datans
+        @ PROW()+1,00 SAY 'Data Ult.Consulta:'
+        @ PROW(),PCOL()+1 SAY cli->datault
+        @ PROW(),PCOL()+3 SAY 'Convenio: '+cli->codconv
+        ver_conv(cli->codconv,PROW(),PCOL()+2,'*')
+        @ PROW()+1,00 SAY traco
+        @ PROW()+2,28 SAY mtit
+        @ PROW()+1,01 SAY ' '
+        RETURN NIL
+ENDDO
+********************** f i m **********************************************************
+FUNCTION cabhist(mtit)
+WHILE .T.
+        IF FILE('hticabe.jpg')
+                @ PROW()+6,0 SAY ''
+        ENDIF
+        //@ PROW()+1,33 SAY 'HISTORICO GERAL DO CLIENTE'
+        @ PROW()+1,00 SAY traco
+        @ PROW()+1,02 SAY 'Reg.:'
+        @ PROW(),07 SAY cli->registro
+        @ PROW(),15 SAY 'Nome:'
+        @ PROW(),21 SAY cli->nome
+        @ PROW(),59 SAY 'Data Nasc.:'
+        @ PROW(),71 SAY cli->datans
+        @ PROW()+1,00 SAY traco
+        @ PROW()+2,28 SAY mtit
+        @ PROW(),28 SAY mtit
+        @ PROW()+2,01 SAY ' '
+        RETURN NIL
+ENDDO
+

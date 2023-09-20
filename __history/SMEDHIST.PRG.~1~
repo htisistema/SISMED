@@ -1,0 +1,823 @@
+* HISTORICO 1
+**********************
+FUNCTION historico1(mreg)
+*********************
+LOCAL mprg:='SMEDHIST',;
+      mlin1 := SPACE(60),mlin2 := SPACE(60),mlin3 := SPACE(60),mlin4 := SPACE(60),mlin5 := SPACE(60),mlin6 := SPACE(60),;
+      mdata_con := mdata,m_hist:={},m_ponto:={},nBota:='',m_historico:={},cons_cli:={}
+
+sr_getconnection():exec("SELECT * FROM smedcli WHERE registro = "+sr_cdbvalue(mreg),,.t.,@cons_cli)
+IF LEN(cons_cli) = 0
+        atencao('Nao foi encontrado este Clientes...')
+        RETURN NIL
+ENDIF
+op_tela(0,0,50,100,' Historia Clinica ',,1)
+//mreg := cons_cli[1,1]
+WHILE .T.
+        DEVPOS(0,1);DEVOUT('Cliente.:')
+        DEVPOS(0,54);DEVOUT('Data Nascimento:             - Idade: ')
+        DEVPOS(1,1);DEVOUT('Convenio:')
+        DEVPOS(1,54);DEVOUT('Estado Civil...:')
+        setcor(3)
+        DEVPOS(0,11);DEVOUT(cons_cli[1,1]+' - '+cons_cli[1,3])
+        DEVPOS(0,71);DEVOUT(DTOC(cons_cli[1,4]))
+        DEVPOS(1,11);DEVOUT(cons_cli[1,18])
+        DEVPOS(1,71);DEVOUT(cons_cli[1,7])
+        calc_nasc(cons_cli[1,4],0,93)
+        ver_conv(cons_cli[1,18],1,14)
+        setcor(1)
+        @ 2,0 TO 2,100
+        @ 29,0 TO 29,100
+        m_historico:={}
+        ASIZE(m_hist,0)
+        ASIZE(m_ponto,0)
+        sr_getconnection():exec("SELECT * FROM smedhist WHERE codcli = "+sr_cdbvalue(mreg)+" ORDER BY data,hora",,.t.,@m_historico)
+        IF LEN(m_historico) > 0
+                i := 0
+                AADD(m_hist,'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']')
+                AADD(m_ponto,m_historico[1,6])
+                mdata_con := m_historico[1,1]
+                i++
+                FOR i = 2 TO LEN(m_historico)
+                        IF mdata_con = m_historico[i,1]
+                                AADD(m_hist,'                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                        ELSE
+                                AADD(m_hist,REPLI('-',76-03))
+                                AADD(m_ponto,0)
+                                AADD(m_hist,'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                                mdata_con := m_historico[i,1]
+                        ENDIF
+                NEXT
+                AADD(m_hist,PADC('****************************  F  I  M  ****************************',76-03))
+                AADD(m_ponto,0)
+        ENDIF
+        IF ! EMPTY(m_hist)
+                Mensagem('<ENTER>p/ Alterar ou <ESC>p/ Inclusao   -   <ESC> p/Abandonar')
+                mponto := LEN(m_hist)
+                mponto := ACHOICE(3,01,28,88,m_hist,,,mponto)
+                IF LASTKEY() = 13
+                        IF m_ponto[mponto] = 0
+                                LOOP
+                        ENDIF
+                        m_histlin:={}
+                        sr_getconnection():exec("SELECT * FROM smedhist WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.t.,@m_histlin)
+                        IF LEN(m_histlin) = 0
+                                atencao('Nao foi possivel encontrar este registro...')
+                                LOOP
+                        ENDIF
+
+                        //GO m_ponto[mponto]
+                        //mlin1 := hist->descricao
+                        //mdata_con := hist->data
+                        mlin1 := m_histlin[1,4]
+                        mdata_con := m_histlin[1,1]
+                        botao(30,01,32,78,,' ALTERACAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        @ 31,7 GET mdata_con
+                        @ 31,18 GET mlin1
+                        READ
+                        IF LASTKEY() = 27
+                                IF 'N' = op_simnao('N','Deseja Abandonar [s/N]:') .OR. LASTKEY() = 27
+                                        LOOP
+                                ENDIF
+                                EXIT
+                        ENDIF
+                        IF EMPTY(mlin1)
+                                opcao := 'N'
+                                opcao := op_simnao('N','Confirma a Exclusao [s/N]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                                sr_getconnection():exec("DELETE FROM smedhist WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ELSE
+                                opcao := 'S'
+                                opcao := op_simnao('S','Confirma a Alteracao [S/n]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                		sr_getconnection():exec("UPDATE smedhist SET descricao = "+sr_cdbvalue(mlin1)+" WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ENDIF
+                        LOOP
+                ELSE
+                        WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                        nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                        WVW_PBEnable( NIL, nBota, .t. )
+                        mlin1 := SPACE(60)
+                        mlin2 := SPACE(60)
+                        mlin3 := SPACE(60)
+                        mlin4 := SPACE(60)
+                        mlin5 := SPACE(60)
+                        mlin6 := SPACE(60)
+                        mdata_con := mdata_sis
+                        botao(30,01,49,78,,' INCLUSAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                        @ 31,7 GET mdata_con
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                        setcor(3)
+                        mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                        setcor(1)
+                        IF LASTKEY() = 27
+                                LOOP
+                        ENDIF
+                        i := 0
+                        linhas := MLCOUNT(mlin1,60)
+                        FOR i = 1 TO  linhas
+                                mlin3 := MEMOLINE(mlin1,60,i,,)
+                                sr_getconnection():exec('INSERT INTO smedhist ('+;
+                                                        'codcli,'+;
+                                                        'data,'+;
+                                                        'hora,'+;
+                                                        'descricao,'+;
+                                                        'operador,'+;
+                                                        'SR_DELETED )'+;
+                                                        ' VALUES ('+;
+                                                        sr_cdbvalue(mreg)+','+; //1
+                                                        sr_cdbvalue(mdata_con)+','+; //2
+                                                        sr_cdbvalue(TIME())+','+; //4
+                                                        sr_cdbvalue(mlin3)+','+; //5
+                                                        sr_cdbvalue(cod_operado)+','+; //6
+                                                        sr_cdbvalue(' ')+')',,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        NEXT
+                ENDIF
+        ELSE
+                WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                WVW_PBEnable( NIL, nBota, .t. )
+                mlin1 := SPACE(60)
+                mlin2 := SPACE(60)
+                mlin3 := SPACE(60)
+                mlin4 := SPACE(60)
+                mlin5 := SPACE(60)
+                mlin6 := SPACE(60)
+                mdata_con := mdata_sis
+                botao(30,01,49,78,,' INCLUSAO ')
+                setcor(1)
+                DEVPOS(31,2);DEVOUT('Data:')
+                DEVPOS(31,16);DEVOUT('-')
+                mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                @ 31,7 GET mdata_con
+                READ
+                IF LASTKEY() = 27
+                        EXIT
+                ENDIF
+                Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                setcor(3)
+                mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                setcor(1)
+                IF LASTKEY() = 27
+                        LOOP
+                ENDIF
+                i := 0
+                linhas := MLCOUNT(mlin1,60)
+                FOR i = 1 TO  linhas
+                        mlin3 := MEMOLINE(mlin1,60,i,,)
+                        sr_getconnection():exec('INSERT INTO smedhist ('+;
+                                                'codcli,'+;
+                                                'data,'+;
+                                                'hora,'+;
+                                                'descricao,'+;
+                                                'operador,'+;
+                                                'SR_DELETED )'+;
+                                                ' VALUES ('+;
+                                                sr_cdbvalue(mreg)+','+; //1
+                                                sr_cdbvalue(mdata_con)+','+; //2
+                                                sr_cdbvalue(TIME())+','+; //4
+                                                sr_cdbvalue(mlin3)+','+; //5
+                                                sr_cdbvalue(cod_operado)+','+; //6
+                                                sr_cdbvalue(' ')+')',,.f.)
+                        sr_getconnection():exec("COMMIT",,.f.)
+                NEXT
+        ENDIF
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+******************************* F I M ******************
+* HISTORICO 2
+**********************
+FUNCTION historico2(mreg)
+*********************
+LOCAL mprg:='SMEDHIST',;
+      mlin1 := SPACE(60),mlin2 := SPACE(60),mlin3 := SPACE(60),mlin4 := SPACE(60),mlin5 := SPACE(60),mlin6 := SPACE(60),;
+      mdata_con := mdata,m_hist:={},m_ponto:={},nBota:='',cons_cli:={}
+
+sr_getconnection():exec("SELECT * FROM smedcli WHERE registro = "+sr_cdbvalue(mreg),,.t.,@cons_cli)
+IF LEN(cons_cli) = 0
+        atencao('Nao foi encontrado este Clientes...')
+        RETURN NIL
+ENDIF
+op_tela(0,0,50,100,' Exame Clinico ',,1)
+//mreg := cons_cli[1,1]
+WHILE .T.
+        DEVPOS(0,1);DEVOUT('Cliente.:')
+        DEVPOS(0,54);DEVOUT('Data Nascimento:             - Idade: ')
+        DEVPOS(1,1);DEVOUT('Convenio:')
+        DEVPOS(1,54);DEVOUT('Estado Civil...:')
+        setcor(3)
+        DEVPOS(0,11);DEVOUT(cons_cli[1,1]+' - '+cons_cli[1,3])
+        DEVPOS(0,71);DEVOUT(DTOC(cons_cli[1,4]))
+        DEVPOS(1,11);DEVOUT(cons_cli[1,18])
+        DEVPOS(1,71);DEVOUT(cons_cli[1,7])
+        calc_nasc(cons_cli[1,4],0,93)
+        ver_conv(cons_cli[1,18],1,14)
+        setcor(1)
+        @ 2,0 TO 2,100
+        @ 29,0 TO 29,100
+        m_historico:={}
+        ASIZE(m_hist,0)
+        ASIZE(m_ponto,0)
+        sr_getconnection():exec("SELECT * FROM smedexam WHERE codcli = "+sr_cdbvalue(mreg)+" ORDER BY data,hora",,.t.,@m_historico)
+        IF LEN(m_historico) > 0
+                i := 0
+                AADD(m_hist,'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']')
+                AADD(m_ponto,m_historico[1,6])
+                mdata_con := m_historico[1,1]
+                i++
+                FOR i = 2 TO LEN(m_historico)
+                        IF mdata_con = m_historico[i,1]
+                                AADD(m_hist,'                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                        ELSE
+                                AADD(m_hist,REPLI('-',76-03))
+                                AADD(m_ponto,0)
+                                AADD(m_hist,'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                                mdata_con := m_historico[i,1]
+                        ENDIF
+                NEXT
+                AADD(m_hist,PADC('****************************  F  I  M  ****************************',76-03))
+                AADD(m_ponto,0)
+        ENDIF
+        IF ! EMPTY(m_hist)
+                Mensagem('<ENTER>p/ Alterar ou <ESC>p/ Inclusao   -   <ESC> p/Abandonar')
+                mponto := LEN(m_hist)
+                mponto := ACHOICE(3,01,28,88,m_hist,,,mponto)
+                IF LASTKEY() = 13
+                        IF m_ponto[mponto] = 0
+                                LOOP
+                        ENDIF
+                        m_histlin:={}
+                        sr_getconnection():exec("SELECT * FROM smedexam WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.t.,@m_histlin)
+                        IF LEN(m_histlin) = 0
+                                atencao('Nao foi possivel encontrar este registro...')
+                                LOOP
+                        ENDIF
+
+                        //GO m_ponto[mponto]
+                        //mlin1 := hist->descricao
+                        //mdata_con := hist->data
+                        mlin1 := m_histlin[1,4]
+                        mdata_con := m_histlin[1,1]
+                        botao(30,01,32,78,,' ALTERACAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        @ 31,7 GET mdata_con
+                        @ 31,18 GET mlin1
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        IF EMPTY(mlin1)
+                                opcao := 'N'
+                                opcao := op_simnao('N','Confirma a Exclusao [s/N]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                                sr_getconnection():exec("DELETE FROM smedexam WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ELSE
+                                opcao := 'S'
+                                opcao := op_simnao('S','Confirma a Alteracao [S/n]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                		sr_getconnection():exec("UPDATE smedexam SET descricao = "+sr_cdbvalue(mlin1)+" WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ENDIF
+                        LOOP
+                ELSE
+                        WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                        nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                        WVW_PBEnable( NIL, nBota, .t. )
+                        mlin1 := SPACE(60)
+                        mlin2 := SPACE(60)
+                        mlin3 := SPACE(60)
+                        mlin4 := SPACE(60)
+                        mlin5 := SPACE(60)
+                        mlin6 := SPACE(60)
+                        mdata_con := mdata_sis
+                        botao(30,01,49,78,,' INCLUSAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                        @ 31,7 GET mdata_con
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                        setcor(3)
+                        mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                        setcor(1)
+                        IF LASTKEY() = 27
+                                LOOP
+                        ENDIF
+                        i := 0
+                        linhas := MLCOUNT(mlin1,60)
+                        FOR i = 1 TO  linhas
+                                mlin3 := MEMOLINE(mlin1,60,i,,)
+                                sr_getconnection():exec('INSERT INTO smedexam ('+;
+                                                        'codcli,'+;
+                                                        'data,'+;
+                                                        'hora,'+;
+                                                        'descricao,'+;
+                                                        'operador,'+;
+                                                        'SR_DELETED )'+;
+                                                        ' VALUES ('+;
+                                                        sr_cdbvalue(mreg)+','+; //1
+                                                        sr_cdbvalue(mdata_con)+','+; //2
+                                                        sr_cdbvalue(TIME())+','+; //4
+                                                        sr_cdbvalue(mlin3)+','+; //5
+                                                        sr_cdbvalue(cod_operado)+','+; //6
+                                                        sr_cdbvalue(' ')+')',,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        NEXT
+                ENDIF
+        ELSE
+                WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                WVW_PBEnable( NIL, nBota, .t. )
+                mlin1 := SPACE(60)
+                mlin2 := SPACE(60)
+                mlin3 := SPACE(60)
+                mlin4 := SPACE(60)
+                mlin5 := SPACE(60)
+                mlin6 := SPACE(60)
+                mdata_con := mdata_sis
+                botao(30,01,49,78,,' INCLUSAO ')
+                setcor(1)
+                DEVPOS(31,2);DEVOUT('Data:')
+                DEVPOS(31,16);DEVOUT('-')
+                mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                @ 31,7 GET mdata_con
+                READ
+                IF LASTKEY() = 27
+                        EXIT
+                ENDIF
+                Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                setcor(3)
+                mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                setcor(1)
+                IF LASTKEY() = 27
+                        LOOP
+                ENDIF
+                i := 0
+                linhas := MLCOUNT(mlin1,60)
+                FOR i = 1 TO  linhas
+                        mlin3 := MEMOLINE(mlin1,60,i,,)
+                        sr_getconnection():exec('INSERT INTO smedexam ('+;
+                                                'codcli,'+;
+                                                'data,'+;
+                                                'hora,'+;
+                                                'descricao,'+;
+                                                'operador,'+;
+                                                'SR_DELETED )'+;
+                                                ' VALUES ('+;
+                                                sr_cdbvalue(mreg)+','+; //1
+                                                sr_cdbvalue(mdata_con)+','+; //2
+                                                sr_cdbvalue(TIME())+','+; //4
+                                                sr_cdbvalue(mlin3)+','+; //5
+                                                sr_cdbvalue(cod_operado)+','+; //6
+                                                sr_cdbvalue(' ')+')',,.f.)
+                        sr_getconnection():exec("COMMIT",,.f.)
+                NEXT
+        ENDIF
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+******************************* F I M ******************
+* HISTORICO 3
+**********************
+FUNCTION historico3(mreg)
+*********************
+LOCAL mprg:='SMEDHIST',;
+      mlin1 := SPACE(60),mlin2 := SPACE(60),mlin3 := SPACE(60),mlin4 := SPACE(60),mlin5 := SPACE(60),mlin6 := SPACE(60),;
+      mdata_con := mdata,m_hist:={},m_ponto:={},nBota:='',cons_cli:={}
+
+sr_getconnection():exec("SELECT * FROM smedcli WHERE registro = "+sr_cdbvalue(mreg),,.t.,@cons_cli)
+IF LEN(cons_cli) = 0
+        atencao('Nao foi encontrado este Clientes...')
+        RETURN NIL
+ENDIF
+op_tela(0,0,50,100,' Hipotese Diagnostico ',,1)
+//mreg := cons_cli[1,1]
+WHILE .T.
+        DEVPOS(0,1);DEVOUT('Cliente.:')
+        DEVPOS(0,54);DEVOUT('Data Nascimento:             - Idade: ')
+        DEVPOS(1,1);DEVOUT('Convenio:')
+        DEVPOS(1,54);DEVOUT('Estado Civil...:')
+        setcor(3)
+        DEVPOS(0,11);DEVOUT(cons_cli[1,1]+' - '+cons_cli[1,3])
+        DEVPOS(0,71);DEVOUT(DTOC(cons_cli[1,4]))
+        DEVPOS(1,11);DEVOUT(cons_cli[1,18])
+        DEVPOS(1,71);DEVOUT(cons_cli[1,7])
+        calc_nasc(cons_cli[1,4],0,93)
+        ver_conv(cons_cli[1,18],1,14)
+        setcor(1)
+        @ 2,0 TO 2,100
+        @ 29,0 TO 29,100
+        m_historico:={}
+        ASIZE(m_hist,0)
+        ASIZE(m_ponto,0)
+        sr_getconnection():exec("SELECT * FROM smeddiag WHERE codcli = "+sr_cdbvalue(mreg)+" ORDER BY data,hora",,.t.,@m_historico)
+        IF LEN(m_historico) > 0
+                i := 0
+                AADD(m_hist,'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']')
+                AADD(m_ponto,m_historico[1,6])
+                mdata_con := m_historico[1,1]
+                i++
+                FOR i = 2 TO LEN(m_historico)
+                        IF mdata_con = m_historico[i,1]
+                                AADD(m_hist,'                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                        ELSE
+                                AADD(m_hist,REPLI('-',76-03))
+                                AADD(m_ponto,0)
+                                AADD(m_hist,'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                                mdata_con := m_historico[i,1]
+                        ENDIF
+                NEXT
+                AADD(m_hist,PADC('****************************  F  I  M  ****************************',76-03))
+                AADD(m_ponto,0)
+        ENDIF
+        IF ! EMPTY(m_hist)
+                Mensagem('<ENTER>p/ Alterar ou <ESC>p/ Inclusao   -   <ESC> p/Abandonar')
+                mponto := LEN(m_hist)
+                mponto := ACHOICE(3,01,28,88,m_hist,,,mponto)
+                IF LASTKEY() = 13
+                        IF m_ponto[mponto] = 0
+                                LOOP
+                        ENDIF
+                        m_histlin:={}
+                        sr_getconnection():exec("SELECT * FROM smeddiag WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.t.,@m_histlin)
+                        IF LEN(m_histlin) = 0
+                                atencao('Nao foi possivel encontrar este registro...')
+                                LOOP
+                        ENDIF
+
+                        //GO m_ponto[mponto]
+                        //mlin1 := hist->descricao
+                        //mdata_con := hist->data
+                        mlin1 := m_histlin[1,4]
+                        mdata_con := m_histlin[1,1]
+                        botao(30,01,32,78,,' ALTERACAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        @ 31,7 GET mdata_con
+                        @ 31,18 GET mlin1
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        IF EMPTY(mlin1)
+                                opcao := 'N'
+                                opcao := op_simnao('N','Confirma a Exclusao [s/N]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                                sr_getconnection():exec("DELETE FROM smeddiag WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ELSE
+                                opcao := 'S'
+                                opcao := op_simnao('S','Confirma a Alteracao [S/n]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                		sr_getconnection():exec("UPDATE smeddiag SET descricao = "+sr_cdbvalue(mlin1)+" WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ENDIF
+                        LOOP
+                ELSE
+                        WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                        nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                        WVW_PBEnable( NIL, nBota, .t. )
+                        mlin1 := SPACE(60)
+                        mlin2 := SPACE(60)
+                        mlin3 := SPACE(60)
+                        mlin4 := SPACE(60)
+                        mlin5 := SPACE(60)
+                        mlin6 := SPACE(60)
+                        mdata_con := mdata_sis
+                        botao(30,01,49,78,,' INCLUSAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                        @ 31,7 GET mdata_con
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                        setcor(3)
+                        mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                        setcor(1)
+                        IF LASTKEY() = 27
+                                LOOP
+                        ENDIF
+                        i := 0
+                        linhas := MLCOUNT(mlin1,60)
+                        FOR i = 1 TO  linhas
+                                mlin3 := MEMOLINE(mlin1,60,i,,)
+                                sr_getconnection():exec('INSERT INTO smeddiag ('+;
+                                                        'codcli,'+;
+                                                        'data,'+;
+                                                        'hora,'+;
+                                                        'descricao,'+;
+                                                        'operador,'+;
+                                                        'SR_DELETED )'+;
+                                                        ' VALUES ('+;
+                                                        sr_cdbvalue(mreg)+','+; //1
+                                                        sr_cdbvalue(mdata_con)+','+; //2
+                                                        sr_cdbvalue(TIME())+','+; //4
+                                                        sr_cdbvalue(mlin3)+','+; //5
+                                                        sr_cdbvalue(cod_operado)+','+; //6
+                                                        sr_cdbvalue(' ')+')',,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        NEXT
+                ENDIF
+        ELSE
+                WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                WVW_PBEnable( NIL, nBota, .t. )
+                mlin1 := SPACE(60)
+                mlin2 := SPACE(60)
+                mlin3 := SPACE(60)
+                mlin4 := SPACE(60)
+                mlin5 := SPACE(60)
+                mlin6 := SPACE(60)
+                mdata_con := mdata_sis
+                botao(30,01,49,78,,' INCLUSAO ')
+                setcor(1)
+                DEVPOS(31,2);DEVOUT('Data:')
+                DEVPOS(31,16);DEVOUT('-')
+                mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                @ 31,7 GET mdata_con
+                READ
+                IF LASTKEY() = 27
+                        EXIT
+                ENDIF
+                Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                setcor(3)
+                mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                setcor(1)
+                IF LASTKEY() = 27
+                        LOOP
+                ENDIF
+                i := 0
+                linhas := MLCOUNT(mlin1,60)
+                FOR i = 1 TO  linhas
+                        mlin3 := MEMOLINE(mlin1,60,i,,)
+                        sr_getconnection():exec('INSERT INTO smeddiag ('+;
+                                                'codcli,'+;
+                                                'data,'+;
+                                                'hora,'+;
+                                                'descricao,'+;
+                                                'operador,'+;
+                                                'SR_DELETED )'+;
+                                                ' VALUES ('+;
+                                                sr_cdbvalue(mreg)+','+; //1
+                                                sr_cdbvalue(mdata_con)+','+; //2
+                                                sr_cdbvalue(TIME())+','+; //4
+                                                sr_cdbvalue(mlin3)+','+; //5
+                                                sr_cdbvalue(cod_operado)+','+; //6
+                                                sr_cdbvalue(' ')+')',,.f.)
+                        sr_getconnection():exec("COMMIT",,.f.)
+                NEXT
+        ENDIF
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+******************************* F I M ******************
+* HISTORICO 4
+**********************
+FUNCTION historico4(mreg)
+*********************
+LOCAL mprg:='SMEDHIST',;
+      mlin1 := SPACE(60),mlin2 := SPACE(60),mlin3 := SPACE(60),mlin4 := SPACE(60),mlin5 := SPACE(60),mlin6 := SPACE(60),;
+      mdata_con := mdata,m_hist:={},m_ponto:={},nBota:='',cons_cli:={}
+
+sr_getconnection():exec("SELECT * FROM smedcli WHERE registro = "+sr_cdbvalue(mreg),,.t.,@cons_cli)
+IF LEN(cons_cli) = 0
+        atencao('Nao foi encontrado este Clientes...')
+        RETURN NIL
+ENDIF
+op_tela(0,0,50,100,' Conduta Medica ',,1)
+//mreg := cons_cli[1,1]
+WHILE .T.
+        DEVPOS(0,1);DEVOUT('Cliente.:')
+        DEVPOS(0,54);DEVOUT('Data Nascimento:             - Idade: ')
+        DEVPOS(1,1);DEVOUT('Convenio:')
+        DEVPOS(1,54);DEVOUT('Estado Civil...:')
+        setcor(3)
+        DEVPOS(0,11);DEVOUT(cons_cli[1,1]+' - '+cons_cli[1,3])
+        DEVPOS(0,71);DEVOUT(DTOC(cons_cli[1,4]))
+        DEVPOS(1,11);DEVOUT(cons_cli[1,18])
+        DEVPOS(1,71);DEVOUT(cons_cli[1,7])
+        calc_nasc(cons_cli[1,4],0,93)
+        ver_conv(cons_cli[1,18],1,14)
+        setcor(1)
+        @ 2,0 TO 2,100
+        @ 29,0 TO 29,100
+        m_historico:={}
+        ASIZE(m_hist,0)
+        ASIZE(m_ponto,0)
+        sr_getconnection():exec("SELECT * FROM smedcond WHERE codcli = "+sr_cdbvalue(mreg)+" ORDER BY data,hora",,.t.,@m_historico)
+        IF LEN(m_historico) > 0
+                i := 0
+                AADD(m_hist,'Data:'+DTOC(m_historico[1,1])+' - '+m_historico[1,4]+'     ['+m_historico[1,5]+']')
+                AADD(m_ponto,m_historico[1,6])
+                mdata_con := m_historico[1,1]
+                i++
+                FOR i = 2 TO LEN(m_historico)
+                        IF mdata_con = m_historico[i,1]
+                                AADD(m_hist,'                  '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                        ELSE
+                                AADD(m_hist,REPLI('-',76-03))
+                                AADD(m_ponto,0)
+                                AADD(m_hist,'Data:'+DTOC(m_historico[i,1])+' - '+m_historico[i,4]+'     ['+m_historico[i,5]+']')
+                                AADD(m_ponto,m_historico[i,6])
+                                mdata_con := m_historico[i,1]
+                        ENDIF
+                NEXT
+                AADD(m_hist,PADC('****************************  F  I  M  ****************************',76-03))
+                AADD(m_ponto,0)
+        ENDIF
+        IF ! EMPTY(m_hist)
+                Mensagem('<ENTER>p/ Alterar ou <ESC>p/ Inclusao   -   <ESC> p/Abandonar')
+                mponto := LEN(m_hist)
+                mponto := ACHOICE(3,01,28,88,m_hist,,,mponto)
+                IF LASTKEY() = 13
+                        IF m_ponto[mponto] = 0
+                                LOOP
+                        ENDIF
+                        m_histlin:={}
+                        sr_getconnection():exec("SELECT * FROM smedcond WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.t.,@m_histlin)
+                        IF LEN(m_histlin) = 0
+                                atencao('Nao foi possivel encontrar este registro...')
+                                LOOP
+                        ENDIF
+
+                        //GO m_ponto[mponto]
+                        //mlin1 := hist->descricao
+                        //mdata_con := hist->data
+                        mlin1 := m_histlin[1,4]
+                        mdata_con := m_histlin[1,1]
+                        botao(30,01,32,78,,' ALTERACAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        @ 31,7 GET mdata_con
+                        @ 31,18 GET mlin1
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        IF EMPTY(mlin1)
+                                opcao := 'N'
+                                opcao := op_simnao('N','Confirma a Exclusao [s/N]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                                sr_getconnection():exec("DELETE FROM smedcond WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ELSE
+                                opcao := 'S'
+                                opcao := op_simnao('S','Confirma a Alteracao [S/n]:')
+                                IF LASTKEY() = 27 .OR. opcao = 'N'
+                                        LOOP
+                                ENDIF
+                		sr_getconnection():exec("UPDATE smedcond SET descricao = "+sr_cdbvalue(mlin1)+" WHERE SR_RECNO = "+sr_cdbvalue(m_ponto[mponto]),,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        ENDIF
+                        LOOP
+                ELSE
+                        WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                        nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                        WVW_PBEnable( NIL, nBota, .t. )
+                        mlin1 := SPACE(60)
+                        mlin2 := SPACE(60)
+                        mlin3 := SPACE(60)
+                        mlin4 := SPACE(60)
+                        mlin5 := SPACE(60)
+                        mlin6 := SPACE(60)
+                        mdata_con := mdata_sis
+                        botao(30,01,49,78,,' INCLUSAO ')
+                        setcor(1)
+                        DEVPOS(31,2);DEVOUT('Data:')
+                        DEVPOS(31,16);DEVOUT('-')
+                        mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                        @ 31,7 GET mdata_con
+                        READ
+                        IF LASTKEY() = 27
+                                EXIT
+                        ENDIF
+                        Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                        setcor(3)
+                        mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                        setcor(1)
+                        IF LASTKEY() = 27
+                                LOOP
+                        ENDIF
+                        i := 0
+                        linhas := MLCOUNT(mlin1,60)
+                        FOR i = 1 TO  linhas
+                                mlin3 := MEMOLINE(mlin1,60,i,,)
+                                sr_getconnection():exec('INSERT INTO smedcond ('+;
+                                                        'codcli,'+;
+                                                        'data,'+;
+                                                        'hora,'+;
+                                                        'descricao,'+;
+                                                        'operador,'+;
+                                                        'SR_DELETED )'+;
+                                                        ' VALUES ('+;
+                                                        sr_cdbvalue(mreg)+','+; //1
+                                                        sr_cdbvalue(mdata_con)+','+; //2
+                                                        sr_cdbvalue(TIME())+','+; //4
+                                                        sr_cdbvalue(mlin3)+','+; //5
+                                                        sr_cdbvalue(cod_operado)+','+; //6
+                                                        sr_cdbvalue(' ')+')',,.f.)
+                                sr_getconnection():exec("COMMIT",,.f.)
+                        NEXT
+                ENDIF
+        ELSE
+                WvW_PBSetFont( NIL, 'Arial Black', 25, 7,)
+                nBota := wvw_pbCreate(NIL,33,2,36,14,'[F10] Gravar',,{||ctrl_w()},,1,.F.)
+                WVW_PBEnable( NIL, nBota, .t. )
+                mlin1 := SPACE(60)
+                mlin2 := SPACE(60)
+                mlin3 := SPACE(60)
+                mlin4 := SPACE(60)
+                mlin5 := SPACE(60)
+                mlin6 := SPACE(60)
+                mdata_con := mdata_sis
+                botao(30,01,49,78,,' INCLUSAO ')
+                setcor(1)
+                DEVPOS(31,2);DEVOUT('Data:')
+                DEVPOS(31,16);DEVOUT('-')
+                mensagem('Preencha a Data ou <ESC> p/Abandonar')
+                @ 31,7 GET mdata_con
+                READ
+                IF LASTKEY() = 27
+                        EXIT
+                ENDIF
+                Mensagem('Descrevar e tecle <F10>p/Gravar ou <ESC>p/abandonar')
+                setcor(3)
+                mlin1 := MEMOEDIT(mlin2,31,18,48,78,,,,,,)
+                setcor(1)
+                IF LASTKEY() = 27
+                        LOOP
+                ENDIF
+                i := 0
+                linhas := MLCOUNT(mlin1,60)
+                FOR i = 1 TO  linhas
+                        mlin3 := MEMOLINE(mlin1,60,i,,)
+                        sr_getconnection():exec('INSERT INTO smedcond ('+;
+                                                'codcli,'+;
+                                                'data,'+;
+                                                'hora,'+;
+                                                'descricao,'+;
+                                                'operador,'+;
+                                                'SR_DELETED )'+;
+                                                ' VALUES ('+;
+                                                sr_cdbvalue(mreg)+','+; //1
+                                                sr_cdbvalue(mdata_con)+','+; //2
+                                                sr_cdbvalue(TIME())+','+; //4
+                                                sr_cdbvalue(mlin3)+','+; //5
+                                                sr_cdbvalue(cod_operado)+','+; //6
+                                                sr_cdbvalue(' ')+')',,.f.)
+                        sr_getconnection():exec("COMMIT",,.f.)
+                NEXT
+        ENDIF
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+******************************* F I M ******************

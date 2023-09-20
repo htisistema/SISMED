@@ -1,0 +1,246 @@
+<!--
+################################################
+# xDevStudio Project - xdev@kssoftware.com.br  #
+# Created @ 14/06/2023 09:01:09                #
+#                                              #
+### Standard xDev Config - Layout v1.5 #########
+-->
+<project>
+   <option compiler="650949">
+   <option outputname="SISMED">
+   <option targettype="EXE">
+   <option outputpath="">
+   <option root="($)">
+   <option runpath="">
+   <option runparams="">
+   <option pathch="C:\xharbour997\include;C:\SQLRDD997\include;ch;C:\Borland\BCC55\Include;C:\HTI\SISMED">
+   <option pathlib="C:\xharbour977\lib;C:\SQLRDD997\lib\BC5;lib;C:\HTI\SISMED">
+   <option pathobj="C:\HTI\SISMED">
+   <option pathtooutput="C:\HTI\SISMED">
+   <option defines="">
+   <option documentroot="">
+   <option makeincfile="Não">
+   <option taskprepare="">
+   <option taskfinalize="">
+
+   <compilerparam name="Harbour.xCompiler">
+      <option presetsname="11644">
+      <option fflagb="Sim">
+      <option fguilib="Gtwvw">
+      <option rdd2="Sim">
+   </compilerparam>
+
+   <compilerparam name="XHarbour.xCompiler">
+      <option presetsname="650949">
+   </compilerparam>
+
+   <unit filename="ATU_SMED.PRG" compile="Sim">
+   <unit filename="CON21.PRG" compile="Sim">
+   <unit filename="CON22.PRG" compile="Sim">
+   <unit filename="CON24.PRG" compile="Sim">
+   <unit filename="CON25.PRG" compile="Sim">
+   <unit filename="CON41.PRG" compile="Sim">
+   <unit filename="CON42.PRG" compile="Sim">
+   <unit filename="CON211.PRG" compile="Sim">
+   <unit filename="CON212.PRG" compile="Sim">
+   <unit filename="CON213.PRG" compile="Sim">
+   <unit filename="CON214.PRG" compile="Sim">
+   <unit filename="CON241.PRG" compile="Sim">
+   <unit filename="CON243.PRG" compile="Sim">
+   <unit filename="CON244.PRG" compile="Sim">
+   <unit filename="CON251.PRG" compile="Sim">
+   <unit filename="CON252.PRG" compile="Sim">
+   <unit filename="CON253.PRG" compile="Sim">
+   <unit filename="CON411.PRG" compile="Sim">
+   <unit filename="CON413.PRG" compile="Sim">
+   <unit filename="CON414.PRG" compile="Sim">
+   <unit filename="CON416.PRG" compile="Sim">
+   <unit filename="CON418.PRG" compile="Sim">
+   <unit filename="CON419.PRG" compile="Sim">
+   <unit filename="CON420.PRG" compile="Sim">
+   <unit filename="CON421.PRG" compile="Sim">
+   <unit filename="CON423.PRG" compile="Sim">
+   <unit filename="CON424.PRG" compile="Sim">
+   <unit filename="CON426.PRG" compile="Sim">
+   <unit filename="CON428.PRG" compile="Sim">
+   <unit filename="CON429.PRG" compile="Sim">
+   <unit filename="errorsys.prg" compile="Sim">
+   <unit filename="HRBFUN.PRG" compile="Sim">
+   <unit filename="SAC63.PRG" compile="Sim">
+   <unit filename="SAC130.PRG" compile="Sim">
+   <unit filename="SAC140.PRG" compile="Sim">
+   <unit filename="SAC141.PRG" compile="Sim">
+   <unit filename="SAC142.PRG" compile="Sim">
+   <unit filename="SACCEP.PRG" compile="Sim">
+   <unit filename="SACDESP.PRG" compile="Sim">
+   <unit filename="SACLER.PRG" compile="Sim">
+   <unit filename="SISMED.PRG" main="true" compile="Sim">
+   <unit filename="SMED00.PRG" compile="Sim">
+   <unit filename="SMED2DES.PRG" compile="Sim">
+   <unit filename="SMED2P.PRG" compile="Sim">
+   <unit filename="SMED2P1.PRG" compile="Sim">
+   <unit filename="SMED3DES.PRG" compile="Sim">
+   <unit filename="SMED5CNV.PRG" compile="Sim">
+   <unit filename="SMED5COL.PRG" compile="Sim">
+   <unit filename="SMED5CON.PRG" compile="Sim">
+   <unit filename="SMED5DAT.PRG" compile="Sim">
+   <unit filename="SMED5DEC.PRG" compile="Sim">
+   <unit filename="SMED5DES.PRG" compile="Sim">
+   <unit filename="SMED5E21.PRG" compile="Sim">
+   <unit filename="SMED5E22.PRG" compile="Sim">
+   <unit filename="SMED5EST.PRG" compile="Sim">
+   <unit filename="SMED5ET1.PRG" compile="Sim">
+   <unit filename="SMED5ET2.PRG" compile="Sim">
+   <unit filename="SMED5ETQ.PRG" compile="Sim">
+   <unit filename="SMED5FRM.PRG" compile="Sim">
+   <unit filename="SMED5PAT.PRG" compile="Sim">
+   <unit filename="SMED5VID.PRG" compile="Sim">
+   <unit filename="SMED30.PRG" compile="Sim">
+   <unit filename="SMED211.PRG" compile="Sim">
+   <unit filename="SMED212.PRG" compile="Sim">
+   <unit filename="SMED213.PRG" compile="Sim">
+   <unit filename="SMED214.PRG" compile="Sim">
+   <unit filename="SMED220.PRG" compile="Sim">
+   <unit filename="SMED221.PRG" compile="Sim">
+   <unit filename="SMED222.PRG" compile="Sim">
+   <unit filename="SMED223.PRG" compile="Sim">
+   <unit filename="SMED230.PRG" compile="Sim">
+   <unit filename="SMED231.PRG" compile="Sim">
+   <unit filename="SMED232.PRG" compile="Sim">
+   <unit filename="SMED233.PRG" compile="Sim">
+   <unit filename="SMED240.PRG" compile="Sim">
+   <unit filename="SMED241.PRG" compile="Sim">
+   <unit filename="SMED242.PRG" compile="Sim">
+   <unit filename="SMED243.PRG" compile="Sim">
+   <unit filename="SMED250.PRG" compile="Sim">
+   <unit filename="SMED251.PRG" compile="Sim">
+   <unit filename="SMED252.PRG" compile="Sim">
+   <unit filename="SMED253.PRG" compile="Sim">
+   <unit filename="SMED260.PRG" compile="Sim">
+   <unit filename="SMED261.PRG" compile="Sim">
+   <unit filename="SMED262.PRG" compile="Sim">
+   <unit filename="SMED263.PRG" compile="Sim">
+   <unit filename="SMED270.PRG" compile="Sim">
+   <unit filename="SMED271.PRG" compile="Sim">
+   <unit filename="SMED272.PRG" compile="Sim">
+   <unit filename="SMED273.PRG" compile="Sim">
+   <unit filename="SMED280.PRG" compile="Sim">
+   <unit filename="SMED290.PRG" compile="Sim">
+   <unit filename="SMED311.PRG" compile="Sim">
+   <unit filename="SMED312.PRG" compile="Sim">
+   <unit filename="SMED313.PRG" compile="Sim">
+   <unit filename="SMED320.PRG" compile="Sim">
+   <unit filename="SMED330.PRG" compile="Sim">
+   <unit filename="SMED340.PRG" compile="Sim">
+   <unit filename="SMED350.PRG" compile="Sim">
+   <unit filename="SMED360.PRG" compile="Sim">
+   <unit filename="SMED370.PRG" compile="Sim">
+   <unit filename="SMED400.PRG" compile="Sim">
+   <unit filename="SMED410.PRG" compile="Sim">
+   <unit filename="SMED420.PRG" compile="Sim">
+   <unit filename="SMED430.PRG" compile="Sim">
+   <unit filename="SMED431.PRG" compile="Sim">
+   <unit filename="SMED432.PRG" compile="Sim">
+   <unit filename="SMED440.PRG" compile="Sim">
+   <unit filename="SMED442.PRG" compile="Sim">
+   <unit filename="SMED450.PRG" compile="Sim">
+   <unit filename="SMED460.PRG" compile="Sim">
+   <unit filename="SMED461.PRG" compile="Sim">
+   <unit filename="SMED470.PRG" compile="Sim">
+   <unit filename="SMED471.PRG" compile="Sim">
+   <unit filename="SMED472.PRG" compile="Sim">
+   <unit filename="SMED473.PRG" compile="Sim">
+   <unit filename="SMED480.PRG" compile="Sim">
+   <unit filename="SMED481.PRG" compile="Sim">
+   <unit filename="SMED500.PRG" compile="Sim">
+   <unit filename="SMED510.PRG" compile="Sim">
+   <unit filename="SMED520.PRG" compile="Sim">
+   <unit filename="SMED530.PRG" compile="Sim">
+   <unit filename="SMED540.PRG" compile="Sim">
+   <unit filename="SMED541.PRG" compile="Sim">
+   <unit filename="SMED542.PRG" compile="Sim">
+   <unit filename="SMED550.PRG" compile="Sim">
+   <unit filename="SMED560.PRG" compile="Sim">
+   <unit filename="SMED570.PRG" compile="Sim">
+   <unit filename="SMED580.PRG" compile="Sim">
+   <unit filename="SMED590.PRG" compile="Sim">
+   <unit filename="SMED591.PRG" compile="Sim">
+   <unit filename="SMED592.PRG" compile="Sim">
+   <unit filename="SMED593.PRG" compile="Sim">
+   <unit filename="SMED594.PRG" compile="Sim">
+   <unit filename="SMED595.PRG" compile="Sim">
+   <unit filename="SMED700.PRG" compile="Sim">
+   <unit filename="SMED710.PRG" compile="Sim">
+   <unit filename="SMED720.PRG" compile="Sim">
+   <unit filename="SMED900.PRG" compile="Sim">
+   <unit filename="SMED5931.PRG" compile="Sim">
+   <unit filename="SMED5932.PRG" compile="Sim">
+   <unit filename="SMED5933.PRG" compile="Sim">
+   <unit filename="SMED5934.PRG" compile="Sim">
+   <unit filename="SMEDCDX.PRG" compile="Sim">
+   <unit filename="SMEDCONS.PRG" compile="Sim">
+   <unit filename="SMEDENDO.PRG" compile="Sim">
+   <unit filename="SMEDEXA.PRG" compile="Sim">
+   <unit filename="SMEDGUIA.PRG" compile="Sim">
+   <unit filename="SMEDPNE1.PRG" compile="Sim">
+   <unit filename="SMEDPNEU.PRG" compile="Sim">
+   <unit filename="SMEDRADI.PRG" compile="Sim">
+   <unit filename="SMEDROT.PRG" compile="Sim">
+   <unit filename="C:\xHarbour997\include\hbapi.h" compile="Sim">
+   <unit filename="C:\xHarbour997\include\hbclass.ch" compile="Sim">
+   <unit filename="C:\xHarbour997\include\WVWTOOLS.CH" compile="Sim">
+   <unit filename="C:\xHarbour997\lib\dbfcdx.lib" compile="Sim">
+   <unit filename="C:\xHarbour997\lib\dbffpt.lib" compile="Sim">
+   <unit filename="C:\xHarbour997\lib\tip.lib" compile="Sim">
+   <unit filename="C:\xHarbour997\lib\WVWTOOLS.LIB" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\firebird.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\msg.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\mysql.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\mysql.h" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\oracle.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\pgs.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\sqlextern.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\sqlodbc.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\sqlora.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\include\sqlrdd.ch" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\fbclient_bc.lib" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\fbclient_ms.lib" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\libmysql.lib" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\libpq.lib" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\oci.lib" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\odbccp32.lib" compile="Sim">
+   <unit filename="C:\SQLRDD997\lib\BC5\sql.lib" compile="Sim">
+   <unit filename="ch\directry.ch" compile="Sim">
+   <unit filename="ch\hbgtinfo.ch" compile="Sim">
+   <unit filename="ch\wingdi.ch" compile="Sim">
+   <unit filename="ch\winuser.ch" compile="Sim">
+   <unit filename="SACCFG.PRG" compile="Sim">
+   <unit filename="lib\gtwvt.lib" compile="Sim">
+   <unit filename="SMEDDBF.PRG" compile="Sim">
+   <unit filename="saccfg.ini" compile="Não">
+   <unit filename="SMED482.PRG" compile="Sim">
+   <unit filename="CON221.PRG" compile="Sim">
+   <unit filename="CON2111.PRG" compile="Sim">
+   <unit filename="con215.prg" compile="Sim">
+   <unit filename="CON2511.PRG" compile="Sim">
+   <unit filename="CON425.PRG" compile="Sim">
+   <unit filename="CON422.PRG" compile="Sim">
+   <unit filename="CON4201.PRG" compile="Sim">
+   <unit filename="CON4202.PRG" compile="Sim">
+   <unit filename="CON4231.PRG" compile="Sim">
+   <unit filename="CON427.PRG" compile="Sim">
+   <unit filename="CON4203.PRG" compile="Sim">
+   <unit filename="CON4204.PRG" compile="Sim">
+   <unit filename="CON4205.PRG" compile="Sim">
+   <unit filename="CON4191.PRG" compile="Sim">
+   <unit filename="CON2411.PRG" compile="Sim">
+   <unit filename="con2521.prg" compile="Sim">
+   <unit filename="CON241V.PRG" compile="Sim">
+   <unit filename="smed483.prg" compile="Sim">
+   <unit filename="SAC_DBF.PRG" compile="Sim">
+   <unit filename="SAUTORIZA.PRG" compile="Sim">
+   <unit filename="SMEDHIST.PRG" compile="Sim">
+   <unit filename="C:\HTI\siachb\impacbr.prg" compile="Sim">
+   <unit filename="C:\HTI\siachb\SACTIPDC.PRG" compile="Sim">
+   <unit filename="C:\HTI\siachb\xls.prg" compile="Sim">
+</project>

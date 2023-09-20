@@ -1,0 +1,147 @@
+*******************************
+* LISTAGEM DAS CONSULTAS
+*******************************
+FUNCTION smed530
+****************
+LOCAL mprg:='SMED530',lci,cci,lba,cba,opcao,mdata1,mdata2,tdata;
+      ,mtotal,mpag,mcont,mnum,mtotch,mopcao,mop,mordem
+
+PRIVATE mmod,mcconv,point
+PRIVATE mtipo_imp,mimp_tipo:=0,mporta_imp,marq:=SPACE(35)
+********* VARIAVEIS DE IMPRESSAO *******************
+mtipo_imp := 'M'
+****************************************************
+mopcao := mop := SPACE(1)
+mnum := 1
+mtotal :=mtotch := mcont := 0
+mpag := 1
+mcconv := SPACE(2)
+lci :=  cci :=  0
+lba :=  18
+cba :=  45
+
+*********************************************
+CLOSE ALL
+abriarq('smedconv','conv')
+abriarq('smedtab','tab')
+*********************************************
+op_tela(10,06,17,85,'LISTAGEM DAS CONSULTAS')
+WHILE .T.
+        limpa(00,00,30,90)
+        exibi_prg(mprg)
+        Mensagem('Preencha as Datas ou Tecle <ESC> p/Retornar')
+        opcao := 0
+        mdata1 := mdata2 := CTOD('  /  /  ')
+        tdata := 0
+        mordem := 'D'
+        setcor(1)
+        DEVPOS(lci+1,cci+2);DEVOUT('Data (Inicio do Periodo)....:')
+        DEVPOS(lci+2,cci+2);DEVOUT('Data (Final do Periodo )....:')
+        DEVPOS(lci+3,cci+2);DEVOUT('Codigo do Convenio .........:')
+                DrawLabel(lci+3,cci+43,'Digite o Codigo do Convenio ou deixe em branco para todos',210,, 'Arial',15,7)
+        DEVPOS(lci+4,cci+2);DEVOUT('[R]etorno [C]onsulta [T]odos:')
+        DEVPOS(lci+5,cci+2);DEVOUT('Ordem [D]ata ou [N]ome......:')
+
+        SET INTEN ON
+        @ lci+1,cci+32 GET mdata1 PICT '@D' VALID IF(EMPTY(mdata1),.F.,.T.)
+        @ lci+2,cci+32 GET mdata2 PICT '@D' VALID IF(mdata2 < mdata1,.F.,.T.)
+        READ
+        IF LASTKEY() = 27
+                EXIT
+        ENDIF
+        Mensagem('p/Consultar Codigos de Convenios Tecle <F3>')
+        @ lci+3,cci+32 GET mcconv PICT '99' VALID IF(EMPTY(mcconv),.T.,vcconv(@mcconv))
+        @ lci+4,cci+32 GET mop PICT '@!' VALID mop $ 'R,C,T'
+        @ lci+5,cci+32 GET mordem PICT '@!' VALID mordem $ 'D,N'
+        READ
+        IF LASTKEY() = 27
+                LOOP
+        ENDIF
+        cComm  := "SELECT * FROM smedmov WHERE datacons >= "+sr_cdbvalue(mdata1)+" AND datacons <= "+sr_cdbvalue(mdata2)
+        IF mop <> 'T'
+                ccomm := ccomm + " AND situacao = "+sr_cdbvalue(mop)
+        ENDIF
+        IF ! EMPTY(mcconv)
+                ccomm := ccomm + " AND codconv = "+sr_cdbvalue(mcconv)
+        ENDIF
+        IF mordem = 'D'
+                ccomm := ccomm + " ORDER BY datacons"
+        ELSE
+                ccomm := ccomm + " ORDER BY cadnome"
+        ENDIF
+        aret:={}
+        sr_getconnection():exec(ccomm,,.t.,@aret)
+        IF ! imp_arq('SMED530.REL')
+                LOOP
+        ENDIF
+        cabcons(mpag,mdata1,mdata2)
+        mcont = 6
+        i:=0
+        FOR i = 1 TO LEN(aret)
+                IF mcont >= 58
+                        EJECT
+                        mpag = mpag + 1
+                        cabcons(mpag,mdata1,mdata2)
+                        mcont = 6
+                ENDIF
+                @ PROW()+1,02 SAY STRZERO(i,3)
+                @ PROW(),07 SAY DTOC(aret[i,1])
+                @ PROW(),19 SAY aret[i,4]
+                @ PROW(),25 SAY aret[i,5]
+                @ PROW(),31 SAY aret[i,2]
+                @ PROW(),67 SAY aret[i,7] PICT '99,999.99'
+                @ PROW(),78 SAY aret[i,9]
+                mtotal = mtotal + aret[i,7]
+                mcont = mcont + 1
+        NEXT
+        IF mcont > 54
+                cabcons(mpag,mdata1,mdata2)
+                EJECT
+        ENDIF
+        @ PROW()+3,02 SAY 'Qtd. Clientes:'
+        @ PROW(),17 SAY LEN(aret) PICT '999,999'
+        @ PROW()+1,02 SAY 'Total em R$..:'
+        @ PROW(),17 SAY mtotal PICT '99,999,999.99'
+        @ PROW()+1,56 SAY TIME()+' Hrs.'
+        EJECT
+        SETPRC(00,00)
+        SET DEVI TO SCREEN;SET PRINT TO;SET PRINT OFF
+        conf_impressao('SMED530.REL')
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+****************************** F I M *******************************
+* CABECALHO LIST.FATURAS
+**************************
+FUNCTION cabcons(fpag,fdata1,fdata2)
+***********************
+LOCAL traco
+traco := REPLI('=',80)
+WHILE .T.
+        @ PROW()+1,34 SAY m_set[1,23]
+        @ PROW()+1,02 SAY m_set[1,23]
+        @ PROW(),31 SAY 'Consultas Realizada no Periodo'
+        @ PROW(),72 SAY 'PAG.'
+        @ PROW(),77 SAY STRZERO(fpag,3)
+        @ PROW()+1,02 SAY 'Sistema Controle Medico'
+        @ PROW(),37 SAY fdata1
+        @ PROW(),46 SAY 'a'
+        @ PROW(),48 SAY fdata2
+        @ PROW(),72 SAY DATE()
+        @ PROW()+1,00 SAY traco
+        @ PROW()+1,02 SAY 'No.'
+        @ PROW(),09 SAY 'Data'
+        @ PROW(),17 SAY 'Proc.'
+        @ PROW(),24 SAY 'Conv.'
+        @ PROW(),33 SAY 'Nome do Cliente'
+        @ PROW(),73 SAY 'Valor'
+        @ PROW(),84 SAY 'Guia No.'
+
+        @ PROW()+1,00 SAY traco
+        RETURN NIL
+ENDDO
+************************** F I M ********************************************
+
+
+
+

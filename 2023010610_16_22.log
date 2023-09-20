@@ -1,0 +1,13 @@
+Error BASE/1003  No existe la variable: M_INDIV
+Funcoes: SISMED.000->MAIN(398)
+************************************************************************************************************************
+Data e Hora........: 06/01/23 - 10:16:22
+Empresa............: ESPACO SAUDE GUEDES                     
+Sistema/Atualizacao: .: SISMED - Sistema de Controle Medico :. - v22.03.29
+Usuario do Sistema.:    
+Nome do Executavel.: C:\HELIO\SISMED\SISMED.EXE
+Nome do Micro......: HELIO1 - Nome Terminal: helio
+Memoria Disponivel.: 2097151 - Espaço em Disco....: 111887384576
+Pasta de Diretorio.: HELIO\SISMED
+Sistema Operacional: Windows NT Professional 6.02.9200
+Caminho do Banco...: localhost:C:\HELIO\SISMED\SISMED.GDB

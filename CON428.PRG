@@ -1,0 +1,177 @@
+MEMVAR getlist,mdata_sis,nivel_acess,mcgc_firm,memp_resa,mend_firm,mcid_firm,;
+       mfone_firm,minsc_firm
+*** CON428.PRG: Emissao de Duplicatas (Receber)
+************************************************
+FUNCTION con428(mcli,mdoc,mvlr,mped,md_p,mvcn,m_tipo)
+****************
+LOCAL MPRG:='CON428',;
+      mtipo,mduplicata,mcod_ven,mtraco,opcao,mnum_ped,tela,mtela,i:=0,mvalor:=0,;
+      mextenso,mlin,mlinha,lin,mno_fat:=SPACE(10),mvlr_fat:=0,mtipo_dup:=' '
+
+PRIVATE mcod_cli,mvenc,memissao,mnome_vend,mcom_ven,mnome_cli,mend,mbairro,mcidade,;
+        muf,mcgc,mcpf,minsc,mbanco,lba,cba,mtipo_imp,mimp_tipo:=0,mqtd_cop:=0,;
+        mtipo_imp,mimp_tipo:=0,marq:=SPACE(35),cons_dupr:={}
+
+IF ! ver_nivel(mprg,'CONTA A RECEBER (IMPRESSAO DE DUPLICATAS)','12345',nivel_acess,,'AMBIE')
+        RETURN NIL
+ENDIF
+
+lba := 14
+cba := 79
+mtraco := REPLI('-',80)
+IF ! AbriArq('sacemp','emp');RETURN NIL;ENDIF
+IF mdoc = NIL
+********* VARIAVEIS DE IMPRESSAO *******************
+        mtipo_imp := 'J'
+****************************************************
+        *------------------------------------------------------------------------------------
+        CLOSE ALL
+        IF ! AbriArq('insopera','sen');RETURN NIL;ENDIF
+        IF ! AbriArq('sacdupr','dupr');RETURN NIL;ENDIF
+        IF ! AbriArq('saccli','cli');RETURN NIL;ENDIF
+        *------------------------------------------------------------------------------------
+        mduplicata := SPACE(12)
+        mcod_cli := mvalor := mnum_ped := 0
+	mtipo := SPACE(2)
+ELSE
+	IF m_tipo <> NIL
+		mtipo := m_tipo
+	ENDIF
+        mduplicata=mdoc
+        mcod_cli=mcli
+        mvalor = mvlr
+        mnum_ped := mped
+ENDIF
+mno_fat := SPACE(10)
+mvlr_fat:=0
+set_key('cliente')
+IF md_p = NIL
+        op_tela(0,0,lba,cba," Emissao de DUPLICATAS ")
+ELSE
+        op_tela(0,0,lba,cba," Emissao de PROMISSORIA ")
+ENDIF
+
+WHILE .T.
+        limpa(0,0,lba,cba)
+        mtipo_imp := m_indiv[1,21]
+        mqtd_cop  := m_indiv[1,22]
+        DEVPOS(1,2);DEVOUT('Tipo de Documento..............:')
+        DEVPOS(2,2);DEVOUT('Numero Duplicata...............:')
+        DEVPOS(3,2);DEVOUT('Codigo do Cliente..............:')
+        DEVPOS(4,2);DEVOUT('Data de Emissao................:')
+        DEVPOS(5,2);DEVOUT('Data de Vencimento.............:')
+        DEVPOS(6,2);DEVOUT('Valor Duplicata R$.............:')
+        DEVPOS(7,2);DEVOUT('Pagamento em [C]arteria [B]anco:')
+        DEVPOS(8,2);DEVOUT('Codigo do Vendedor.............:')
+        DEVPOS(9,2);DEVOUT('Numero do Pedido...............:')
+        DEVPOS(10,2);DEVOUT('Numero da Fatura...............:             Valor R$:')
+        DEVPOS(11,2);DEVOUT('Quantidade de Copias...........:')
+        DEVPOS(12,2);DEVOUT('Tipo Dup.[S]istema [P]re Impressa.:')
+        *****************
+        SELE('dupr');ORDSETFOCUS(1)
+        *****************
+        mnome_cli := SPACE(40)
+        mend := SPACE(35)
+        mbairro := mcidade := SPACE(20)
+        muf := SPACE(2)
+        mcgc := minsc := SPACE(14)
+        mcpf := SPACE(11)
+        mcod_ven := mcom_ven := 0
+        mnome_vend := SPACE(30)
+        memissao=mdata_sis
+        IF mvcn <> NIL
+                mvenc=mvcn
+        ELSE
+                mvenc=CTOD("  /  /  ")
+        ENDIF
+        mbanco := SPACE(1)
+        Mensagem('Digite o Numero da Duplicata. [ESC] Abandona.')
+        @ 1,35 GET mtipo PICT '@!' VALID ver_tipdc(mtipo,'*')
+        @ 2,35 GET mduplicata PICT '@!'
+        READ
+        IF LASTKEY()=27 .OR. mduplicata = SPACE(12)
+                wvw_lclosewindow()
+                RETURN NIL
+        ENDIF
+        Mensagem('Complete os Dados. [ESC] Abandona.')
+        @ 3,35 GET mcod_cli PICT "99999" VALID mcli(mcod_cli,3,35) .AND. lim_get() WHEN men_get(4,31,'Informe o Cod. do Cliente ou <F7>p/pesquisas de clientes')
+        READ
+        //cComm  :=
+        cons_doc:={}
+        sr_getconnection():exec("SELECT * FROM sacdupr WHERE fornec = "+sr_cdbvalue(STRZERO(mcod_cli,5))+" AND tipo = "+sr_cdbvalue(mtipo)+" AND duplicata = "+sr_cdbvalue(mduplicata),,.t.,@cons_doc)
+        sr_getconnection():exec('COMMIT',,.f.)
+        IF LEN(cons_doc) > 0
+                memissao := cons_doc[1,10]
+                mvenc    := cons_doc[1,11]
+                mvalor   := cons_doc[1,19]
+                mbanco   := cons_doc[1,16]
+                mcod_ven := cons_doc[1,30]
+                mnum_ped := cons_doc[1,31]
+        ENDIF
+
+        mtipo_dup = 'S'
+        IF ! EMPTY(mcod_cli);mcli(mcod_cli,3,35);ENDIF
+        @ 4,35 GET memissao
+        @ 5,35 GET mvenc VALID vencim(mvenc)
+        @ 6,35 GET mvalor PICTure "99,999,999,999.99" VALID mvalor>0
+        @ 7,35 GET mbanco PICT "@!" VALID mbanco $ 'C,B, ' WHEN md_p = NIL
+        @ 8,35 GET mcod_ven PICT "999" VALID ven(mcod_ven,8,39)
+        @ 9,35 GET mnum_ped PICT "999999"
+        @ 10,35 GET mno_fat PICT "@!" WHEN md_p = NIL
+        @ 10,57 GET mvlr_fat PICT "9,999,999.99" WHEN md_p = NIL
+        @ 11,35 GET mqtd_cop PICT "99"
+        @ 12,38 GET mtipo_dup PICT "@!" VALID mtipo_dup $ 'S,P' WHEN md_p = NIL
+        READ
+        IF LASTKEY()=27
+                LOOP
+        ENDIF
+        IF ! imp_arq('DUPLICATA.REL','D');LOOP;ENDIF
+        IF mtipo_dup = 'P'
+                        imprt(mtipo_imp,'C')
+                        @ PROW()+10,21 SAY mduplicata
+                        DEVPOS(PROW(),40);DEVOUT(TRANSFORM(iat(mvalor,2),'99,999,999.99'))
+                        @ PROW(),60 SAY mduplicata
+                        DEVPOS(PROW(),80);DEVOUT(TRANSFORM(iat(mvalor,2),'99,999,999.99'))
+                        @ PROW(),99 SAY mvenc
+                        @ PROW()+3,65 SAY STRZERO(mvenc-mdata_sis,3)+' dias'
+                        @ PROW()+3,60 SAY STRZERO(mcod_cli,5)
+                        @ PROW(),PCOL()+1 SAY mnome_cli
+                        @ PROW()+1,60 SAY mend
+                        @ PROW()+1,60 SAY RTRIM(mbairro)+'-Cidade: '+RTRIM(mcidade)
+                        @ PROW(),110 SAY muf
+                        @ PROW()+1,60 SAY 'Cobranca Bancaria'
+                        IF mcgc <> SPACE(14)
+                                DEVPOS(PROW()+1,60);DEVOUTPICT(mcgc,'@@R 99.999.999/9999-99')
+                                DEVPOS(PROW(),100);DEVOUT(minsc)
+                        ELSEIF mcpf <> SPACE(11)
+                                DEVPOS(PROW()+1,60);DEVOUTPICT(mcpf,'@@R 999.999.999-99')
+                        ELSE
+                                DEVPOS(PROW()+1,00);DEVOUT(' ')
+                        ENDIF
+                        mextenso:= '('+RTRIM(extenso(iat(mvalor,2),.T.,'real','reais'))+')'
+                        mlinha := MLCOUNT(mextenso,50)
+                        DEVPOS(PROW()+1,00);DEVOUT(' ')
+                        FOR lin = 1 TO mlinha
+                                mlin := MEMOLINE(mextenso,50,lin,,10)
+                                DEVPOS(PROW()+1,60);DEVOUT(PADR(RTRIM(mlin),50))
+                        NEXT
+                        imprt(mtipo_imp,'N')
+        ELSE
+                FOR i = 1 TO mqtd_cop
+                        dup_sis(STRZERO(mcod_cli,5),mnome_cli,mend,mbairro,mcidade,muf,cli->cep,cli->tel1,;
+                                mcgc,minsc,mcpf,cli->end_cob,cli->bairro_cob,cli->cidade_cob,cli->uf_cob,cli->cep_cob,cli->fone_cob,;
+                                mtipo,mduplicata,memissao,mvenc,mcod_ven,mvalor,cli->nome,mno_fat,mvlr_fat,md_p)
+                NEXT
+        ENDIF
+        SETPRC(00,00)
+        SET DEVI TO SCREEN;SET PRINT TO;SET PRINT OFF
+        conf_impressao('DUPLICATA.REL')
+        EXIT
+ENDDO
+wvw_lclosewindow()
+RETURN NIL
+*********************** f i m *************************************
+
+
+
+

@@ -1,0 +1,267 @@
+* CONSULTA DE CLIENTES
+**********************
+FUNCTION smed214(mreg)
+**********************
+LOCAL mprg:='SMED214',opcao
+
+PRIVATE mnome,mvalor,mfator,mmod,mrsoc,mdata,mcconv,mprazo,mdata_cons,mtp_consulta,;
+        mcons_cli:={},mcod_cli := 0,mrecib:=' '
+
+IF ! ver_nivel(mprg,'CONSULTA DE CLIENTE','12',nivel_acess)
+        RETURN NIL
+ENDIF
+IF ! abriarq('smedconv','conv');RETURN NIL;ENDIF
+mcons_cli := {}
+sr_getconnection():exec("SELECT * FROM smedcli WHERE registro = "+sr_cdbvalue(mreg),,.t.,@mcons_cli)
+IF LEN(mcons_cli) = 0
+        atencao('Nao foi encontrado nenhum CLIENTE..')
+        RETURN NIL
+ENDIF
+op_tela(0,0,50,110,'CONSULTA DE CLIENTE',,1)
+CLEAR GETS
+WvW_PBSetFont( NIL, 'times', 25, 7,)
+nhist1  := wvw_pbCreate(NIL,01,87,04,105,'[H]istoria Clinica',,{||historico1(mcons_cli[1,1])},,1,.F.)
+nhist2  := wvw_pbCreate(NIL,06,87,09,105,'[E]xame Clinico',,{||historico2(mcons_cli[1,1])},,1,.F.)
+nhist3  := wvw_pbCreate(NIL,11,87,14,105,'Hipotese [D]iagnostico',,{||historico3(mcons_cli[1,1])},,1,.F.)
+nhist4  := wvw_pbCreate(NIL,16,87,19,105,'[C]onduta Medica',,{||historico4(mcons_cli[1,1])},,1,.F.)
+nd_esta := wvw_pbCreate(NIL,21,87,24,105,'Dados Es[T]atisticos',,{||smed710()},,1,.F.)
+nrecibo := wvw_pbCreate(NIL,26,87,29,105,'Emitir [R]ecibo',,{||recibo(mcons_cli[1,3],mdata_sis,mvalor,mcons_cli[1,55])},,1,.F.)
+nreceita:= wvw_pbCreate(NIL,31,87,34,105,'Emitir Rece[I]ta',,{||smed540(mcons_cli[1,3],mdata_sis,1)},,1,.F.)
+nexame  := wvw_pbCreate(NIL,36,87,39,105,'Emitir E[X]ames',,{||smedexa(mcons_cli[1,3],mdata_sis,1)},,1,.F.)
+ncirurgia:= wvw_pbCreate(NIL,41,87,44,105,'Cirurgias',,{||smed470(VAL(mcons_cli[1,1]))},,1,.F.)
+nfim    := wvw_pbCreate(NIL,46,87,49,105,'<ESC> Finalizar Consulta',,{||tecla_esc()},,1,.F.)
+
+WVW_PBEnable( NIL, nhist1, .f. )
+WVW_PBEnable( NIL, nhist2, .f. )
+WVW_PBEnable( NIL, nhist3, .f. )
+WVW_PBEnable( NIL, nhist4, .f. )
+WVW_PBEnable( NIL, nd_esta, .f. )
+WVW_PBEnable( NIL, nrecibo, .f. )
+WVW_PBEnable( NIL, nreceita, .f. )
+WVW_PBEnable( NIL, nexame, .f. )
+WVW_PBEnable( NIL, ncirurgia, .f. )
+WVW_SetMouseMove(,.F.)
+mtp_consulta := ' '
+WHILE .T.
+        mdata_cons := mdata_sis
+        exibi_prg(mprg)
+        Mensagem('<ESC> Retornar - <ENTER> Confirma - <A> Alterar Reg. - <'+setcim+'> Prox. Reg. - <'+setbaix+'> Reg. Ant.')
+        limpa(00,00,30,90)
+        @ 00,85 TO 50,85
+        setcor(1)
+        Mensagem('Preencha os Campos - <ESC> p/Abandonar - <F3> p/Consultar Convenio')
+        DEVPOS(0,1 );DEVOUT('Data Cadastro.....:')
+        DEVPOS(1,1 );DEVOUT('Registro..........:')
+        DEVPOS(2,1 );DEVOUT('Nome CLIENTE......:')
+        DEVPOS(3 ,1);DEVOUT('Endereco..........:')
+        DEVPOS(4 ,1);DEVOUT('Numero............:')
+        DEVPOS(4 ,28);DEVOUT('Complemento:')
+        DEVPOS(5 ,1);DEVOUT('Bairro............:')
+        DEVPOS(6 ,1);DEVOUT('Cidade............:')
+        DEVPOS(6 ,48);DEVOUT('UF:')
+        DEVPOS(7 ,1);DEVOUT('CEP...............:')
+        DEVPOS(8 ,1);DEVOUT('Fone..............:')
+        DEVPOS(9 ,1);DEVOUT('Fone 1............:')
+        DEVPOS(10,1);DEVOUT('EMAIL.............:')
+        DEVPOS(11,1);DEVOUT('INSTAGRAM.........:')
+        DEVPOS(12,1);DEVOUT('Estado Civil......:')
+                DrawLabel(12,23,'[S]olteiro [C]asado [D]ivorciado [V]iuvo Se[P]arado',210,, 'Arial',15,7)
+        DEVPOS(13,1);DEVOUT('Natural...........:')
+        DEVPOS(14,1);DEVOUT('CPF...............:')
+        DEVPOS(15,1);DEVOUT('R.G...............:')
+        DEVPOS(16,1);DEVOUT('Data Nascimento...:')
+        DEVPOS(16,37);DEVOUT('Idade:')
+        DEVPOS(17,1);DEVOUT('Sexo..............:')
+                DrawLabel(17,23,'[M]asculino [F]eminino',210,, 'Arial',15,8)
+        DEVPOS(18,1);DEVOUT('Raca/Cor..........:')
+                DrawLabel(18,23,'[P]reta [B]ranca Pra[D]a [O]utra',210,, 'Arial',15,7)
+        DEVPOS(19,1);DEVOUT('Escolaridade......:')
+                DrawLabel(19,23,'[1]Nunca estudou - [2]Alfabetizacao/1o.ano - [3]Fund.incompleto',210,, 'Arial',15,6)
+                DrawLabel(20,23,'[4]Fund.completo - [5]Medio incompleto - [6]Medio completo',210,, 'Arial',15,6)
+                DrawLabel(21,23,'[7]Superior incompleto - [8]Superior completo',210,,'Arial',15,6)
+        DEVPOS(22,1);DEVOUT('Empresa Trabalho..:')
+        DEVPOS(23,1);DEVOUT('Profissao.........:')
+        DEVPOS(24,1);DEVOUT('Responsavel.......:')
+        DEVPOS(25,1);DEVOUT('Fone Responsavel..:')
+        DEVPOS(26,1);DEVOUT('Indicado Por......:')
+        DEVPOS(27,1);DEVOUT('Conjuge...........:')
+        DEVPOS(28,1);DEVOUT('Trabalho Conjuge..:')
+        DEVPOS(29,1);DEVOUT('Profissao.........:')
+        DEVPOS(30,1);DEVOUT('Fone..............:')
+        DEVPOS(31,1);DEVOUT('Codigo Convenio...:')
+        DEVPOS(32,1);DEVOUT('Plano.............:')
+        DEVPOS(33,1);DEVOUT('No.do Cartao......:')
+        DEVPOS(34,1);DEVOUT('Validade..........:')
+        DEVPOS(35,1);DEVOUT('Data Ult.Consulta.:')
+        DEVPOS(36,1);DEVOUT('Data Prox.Consulta:')
+        DEVPOS(37,1);DEVOUT('E fumante [S/N/E].:')
+        DEVPOS(38,1);DEVOUT('Data Inicial......:')
+        DEVPOS(39,1);DEVOUT('Data Final........:')
+        DEVPOS(40,1);DEVOUT('Observacao........:')
+        IF nivel('1','2')
+                WVW_PBEnable( NIL, nhist1, .t. )
+                WVW_PBEnable( NIL, nhist2, .t. )
+                WVW_PBEnable( NIL, nhist3, .t. )
+                WVW_PBEnable( NIL, nhist4, .t. )
+		WVW_PBEnable( NIL, nd_esta, .t. )
+		WVW_PBEnable( NIL, nreceita, .t. )
+		WVW_PBEnable( NIL, nexame, .t. )
+		WVW_PBEnable( NIL, nrecibo, .t. )
+                WVW_PBEnable( NIL, ncirurgia, .t. )
+        ENDIF
+        vcconv(mcons_cli[1,18],31,24,'*')
+        mvalor := conv->valor_con
+        Mensagem('Campos Liberados  -  <ESC> Abandonar  -  <F3> Consultar Convenio')
+        mcod_cli := VAL(mcons_cli[1,1])
+        mnome    := mcons_cli[1,3]
+        SETCOR(3)
+        DEVPOS(0,21);DEVOUT(mcons_cli[1,2])
+        DEVPOS(1,21);DEVOUT(mcons_cli[1,1])
+        DEVPOS(2,21);DEVOUT(mcons_cli[1,3])
+        DEVPOS(3,21);DEVOUT(mcons_cli[1,10])
+        DEVPOS(4,21);DEVOUT(mcons_cli[1,75])
+        DEVPOS(4,42);DEVOUT(mcons_cli[1,74])
+        DEVPOS(5,21);DEVOUT(mcons_cli[1,20])
+        DEVPOS(6,21);DEVOUT(mcons_cli[1,11])
+        DEVPOS(6,52);DEVOUT(mcons_cli[1,13])
+        DEVPOS(7,21);DEVOUTPICT(mcons_cli[1,14],'99999-999')
+        DEVPOS(8,21);DEVOUT(mcons_cli[1,12])
+        DEVPOS(9,21);DEVOUT(mcons_cli[1,56])
+        DEVPOS(10,21);DEVOUT(mcons_cli[1,82])
+        DEVPOS(11,21);DEVOUT(mcons_cli[1,83])
+        DEVPOS(12,21);DEVOUT(mcons_cli[1,7])
+        DEVPOS(13,21);DEVOUT(mcons_cli[1,9])
+        DEVPOS(14,21);DEVOUTPICT(mcons_cli[1,55],'@!@R 999.999.999-99')
+        DEVPOS(15,21);DEVOUT(mcons_cli[1,29])
+        DEVPOS(16,21);DEVOUT(mcons_cli[1,4])
+        DEVPOS(17,21);DEVOUT(mcons_cli[1,5])
+        DEVPOS(18,21);DEVOUT(mcons_cli[1,6])
+        DEVPOS(19,21);DEVOUT(mcons_cli[1,59])
+        DEVPOS(22,21);DEVOUT(mcons_cli[1,19])
+        DEVPOS(23,21);DEVOUT(mcons_cli[1,8])
+        DEVPOS(24,21);DEVOUT(mcons_cli[1,15])
+        DEVPOS(25,21);DEVOUT(mcons_cli[1,57])
+        DEVPOS(26,21);DEVOUT(mcons_cli[1,16])
+        DEVPOS(27,21);DEVOUT(mcons_cli[1,21])
+        DEVPOS(28,21);DEVOUT(mcons_cli[1,22])
+        DEVPOS(29,21);DEVOUT(mcons_cli[1,23])
+        DEVPOS(30,21);DEVOUT(mcons_cli[1,24])
+        DEVPOS(31,21);DEVOUT(mcons_cli[1,18])
+        DEVPOS(32,21);DEVOUT(mcons_cli[1,25])
+        DEVPOS(33,21);DEVOUT(mcons_cli[1,26])
+        DEVPOS(34,21);DEVOUT(mcons_cli[1,28])
+        DEVPOS(35,21);DEVOUT(DTOC(mcons_cli[1,17]))
+        DEVPOS(37,21);DEVOUT(mcons_cli[1,30])
+        DEVPOS(38,21);DEVOUT(DTOC(mcons_cli[1,31]))
+        DEVPOS(39,21);DEVOUT(DTOC(mcons_cli[1,32]))
+        DEVPOS(41,21);DEVOUT(mcons_cli[1,33])
+        DEVPOS(42,21);DEVOUT(mcons_cli[1,34])
+        DEVPOS(43,21);DEVOUT(mcons_cli[1,35])
+        DEVPOS(44,21);DEVOUT(mcons_cli[1,36])
+        SETCOR(1)
+        exibi_foto(0,65,14,84,m_cfg[3],'C',mcons_cli[1,1])
+        IF EMPTY(mtp_consulta)
+                uso_cons()
+        ENDIF
+        IF LASTKEY() = 27
+                WVW_PBDestroy( NIL, nhist1, .t. )
+                WVW_PBDestroy( NIL, nhist2, .t. )
+                WVW_PBDestroy( NIL, nhist3, .t. )
+                WVW_PBDestroy( NIL, nhist4, .t. )
+                WVW_PBDestroy( NIL, nd_esta, .t. )
+                WVW_PBDestroy( NIL, nreceita, .t. )
+                WVW_PBDestroy( NIL, nexame, .t. )
+                WVW_SetMouseMove(,.T.)
+                wvw_lclosewindow()
+                RETURN NIL
+        ENDIF
+        IF mtp_consulta = 'U'
+                DrawLabel(46,12,'USO MEDICO',,,'Arial Black',65,50)
+        ELSE
+                DrawLabel(46,12,'CONSULTA',,,'Arial Black',65,50)
+        ENDIF
+        INKEY(0)
+        IF LASTKEY() = ASC('h') .OR. LASTKEY() = ASC('H')
+                historico1(mcons_cli[1,1])
+        ELSEIF LASTKEY() = ASC('e') .OR. LASTKEY() = ASC('E')
+                historico2(mcons_cli[1,1])
+        ELSEIF LASTKEY() = ASC('d') .OR. LASTKEY() = ASC('D')
+                historico3(mcons_cli[1,1])
+        ELSEIF LASTKEY() = ASC('c') .OR. LASTKEY() = ASC('C')
+                historico4(mcons_cli[1,1])
+        ELSEIF LASTKEY() = ASC('t') .OR. LASTKEY() = ASC('T')
+                smed710()
+        ELSEIF LASTKEY() = ASC('r') .OR. LASTKEY() = ASC('R')
+                recibo(mcons_cli[1,3],mdata_sis,mvalor,mcons_cli[1,55])
+        ELSEIF LASTKEY() = ASC('i') .OR. LASTKEY() = ASC('I')
+                smed540(mcons_cli[1,3],mdata_sis,1)
+        ELSEIF LASTKEY() = ASC('x') .OR. LASTKEY() = ASC('X')
+                smedexa(mcons_cli[1,3],mdata_sis,1)
+        ENDIF
+        IF LASTKEY() = 27
+                EXIT
+        ENDIF
+ENDDO
+IF mtp_consulta = 'C'
+        sr_getconnection():exec("UPDATE smedcli SET datault = "+sr_cdbvalue(mdata_cons)+" WHERE registro = "+sr_cdbvalue(mcons_cli[1,1]),,.f.)
+        sr_getconnection():exec("COMMIT",,.f.)
+        sr_getconnection():exec('INSERT INTO smedmov ('+;
+                                'datacons,'+;
+                                'cadnome,'+;
+                                'registro,'+;
+                                'situacao,'+;
+                                'codconv,'+;
+                                'modalidade,'+;
+                                'valor,'+;
+                                'recibo,'+;
+                                'SR_DELETED )'+;
+                                ' VALUES ('+;
+                                sr_cdbvalue(mdata_cons)+','+; //1
+                                sr_cdbvalue(mcons_cli[1,3])+','+; //4
+                                sr_cdbvalue(mcons_cli[1,1])+','+; //2
+                                sr_cdbvalue('C')+','+; //5
+                                sr_cdbvalue(mcons_cli[1,18])+','+; //6
+                                sr_cdbvalue(conv->modalidade)+','+; //6
+                                sr_cdbvalue(conv->valor_con)+','+; //6
+                                sr_cdbvalue(mrecib)+','+; //6
+                                sr_cdbvalue(' ')+')',,.f.)
+        sr_getconnection():exec("COMMIT",,.f.)
+ELSEIF mtp_consulta = 'U'
+        sr_getconnection():exec('INSERT INTO smedmov ('+;
+                                'datacons,'+;
+                                'cadnome,'+;
+                                'registro,'+;
+                                'situacao,'+;
+                                'codconv,'+;
+                                'modalidade,'+;
+                                'valor,'+;
+                                'recibo,'+;
+                                'SR_DELETED )'+;
+                                ' VALUES ('+;
+                                sr_cdbvalue(mdata_cons)+','+; //1
+                                sr_cdbvalue(mcons_cli[1,3])+','+; //4
+                                sr_cdbvalue(mcons_cli[1,1])+','+; //2
+                                sr_cdbvalue('R')+','+; //5
+                                sr_cdbvalue(mcons_cli[1,18])+','+; //6
+                                sr_cdbvalue(conv->modalidade)+','+; //6
+                                sr_cdbvalue(0)+','+; //6
+                                sr_cdbvalue('N')+','+; //6
+                                sr_cdbvalue(' ')+')',,.f.)
+        sr_getconnection():exec("COMMIT",,.f.)
+ENDIF
+WVW_PBDestroy( NIL, nhist1, .t. )
+WVW_PBDestroy( NIL, nhist2, .t. )
+WVW_PBDestroy( NIL, nhist3, .t. )
+WVW_PBDestroy( NIL, nhist4, .t. )
+WVW_PBDestroy( NIL, nd_esta, .t. )
+WVW_PBDestroy( NIL, nreceita, .t. )
+WVW_PBDestroy( NIL, nexame, .t. )
+WVW_PBDestroy( NIL, ncirurgia, .t. )
+WVW_SetMouseMove(,.T.)
+wvw_lclosewindow()
+RETURN NIL
+******************************* F I M ******************
+FUNCTION tecla_esc()
+*******************
+KEYBOARD CHR(27)
+RETURN NIL

@@ -1,0 +1,23 @@
+Error BASE/1003  No existe la variable: MDATE
+Funcoes: ->(b)__GET(84)
+Funcoes: tget.prg->GET:VARGET(790)
+Funcoes: tget.prg->GET:NEW(237)
+Funcoes: tgetint.prg->__GET(88)
+Funcoes: SMED5FRM.PRG->SMED5FRM1(63)
+Funcoes: SMED5FRM.PRG->SMED5FRM(40)
+Funcoes: SMED00.PRG->AFTERINKEY(575)
+Funcoes: SMED00.PRG->(b)SMED0(390)
+Funcoes: ->INKEY(0)
+Funcoes: SMED00.PRG->SMED0(393)
+Funcoes: SISMED.PRG->MAIN(446)
+************************************************************************************************************************
+Data e Hora........: 14/06/23 - 09:47:57
+Empresa............: ESPACO SAUDE GUEDES                     
+Sistema/Atualizacao: .: SISMED - Sistema de Controle Medico :. - v23.06.14
+Usuario do Sistema.: 999
+Nome do Executavel.: C:\HTI\SISMED\SISMED.EXE
+Nome do Micro......: HELIO-PC - Nome Terminal: Helio
+Memoria Disponivel.: 2097151 - Espaço em Disco....: 20754960384
+Pasta de Diretorio.: HTI\SISMED
+Sistema Operacional: Windows NT Professional 6.02.9200
+Caminho do Banco...: localhost:C:\HTI\SISMED\SISMED.GDB
