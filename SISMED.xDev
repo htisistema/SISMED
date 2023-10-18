@@ -1,7 +1,7 @@
 <!--
 ################################################
 # xDevStudio Project - xdev@kssoftware.com.br  #
-# Created @ 14/06/2023 09:01:09                #
+# Created @ 18/10/2023 11:23:16                #
 #                                              #
 ### Standard xDev Config - Layout v1.5 #########
 -->
@@ -240,7 +240,7 @@
    <unit filename="SAC_DBF.PRG" compile="Sim">
    <unit filename="SAUTORIZA.PRG" compile="Sim">
    <unit filename="SMEDHIST.PRG" compile="Sim">
-   <unit filename="C:\HTI\siachb\impacbr.prg" compile="Sim">
-   <unit filename="C:\HTI\siachb\SACTIPDC.PRG" compile="Sim">
-   <unit filename="C:\HTI\siachb\xls.prg" compile="Sim">
+   <unit filename="C:\HTI\SISCOM\impacbr.prg" compile="Sim">
+   <unit filename="C:\HTI\SISCOM\SACTIPDC.PRG" compile="Sim">
+   <unit filename="C:\HTI\SISCOM\xls.prg" compile="Sim">
 </project>

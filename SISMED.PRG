@@ -43,7 +43,7 @@ PUBLIC senha_acess,nivel_acess,cod_operado,mmedico,cor,;
         m_set:={}
 ******* T I P O   D E   S I S T E M A **************
 sistema := '.: SISMED - Sistema de Controle Medico :.'
-mversao := 'v23.07.05'
+mversao := 'v23.10.18'
 ****************************************************
 cor := SETCOLOR()
 mdata_sis := DATE()
@@ -92,6 +92,7 @@ SET WRAP ON
 SET DATE BRITI
 SET DELE ON
 SET EPOCH TO 1930
+SET CENTURY on
 SETMODE(50,120)
 IF ! FILE('saccfg.ini')
         mArq := fcreate("saccfg.ini" )
