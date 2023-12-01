@@ -166,6 +166,7 @@ WHILE .T.
                         @ PROW()+3,01 SAY '[ ] U S G TRANSVAGINAL'
                         @ PROW()+3,01 SAY '[ ] U S G TIREOIDE COM DOPPLER COLOR'
                         @ PROW()+3,01 SAY '[ ] U S G ABDOMEN SUPERIOR'
+                        @ PROW()+3,01 SAY '[ ] U S G PELVICA'
                         @ PROW()+3,01 SAY '[ ] ____________________________________'
                         @ PROW()+3,01 SAY 'OBS:_________________________________________________ '
                         @ PROW()+2,01 SAY '    _________________________________________________ '

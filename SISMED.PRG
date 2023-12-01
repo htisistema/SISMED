@@ -43,7 +43,7 @@ PUBLIC senha_acess,nivel_acess,cod_operado,mmedico,cor,;
         m_set:={}
 ******* T I P O   D E   S I S T E M A **************
 sistema := '.: SISMED - Sistema de Controle Medico :.'
-mversao := 'v23.10.18'
+mversao := 'v23.12.01'
 ****************************************************
 cor := SETCOLOR()
 mdata_sis := DATE()

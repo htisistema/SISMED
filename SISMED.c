@@ -2,7 +2,7 @@
  * xHarbour build 0.99.70 Intl. (SimpLex)
  * Generated C source code from <SISMED.PRG>
  * Command: C:\xHarbour997\bin\harbour.exe C:\HTI\SISMED\SISMED.PRG /q /oC:\HTI\SISMED\SISMED.c /M /N -DxHB -DXHB_0990 -DXHB_0991 -DXHB_0992 -DXHB_0993 -DXHB_0994 -DXHB_09941 -DXHB_09950 -DXHB_09951a -DXHB_09951 -DXHB_09951b -DXHB_0996 -DXHB_09960 -DXHB_09961 -DXHB_09961B -DXHB_0997 -DXHB_09970 
- * Created: 2023.10.18 11:39:49 (Borland C++ 5.5.1)
+ * Created: 2023.12.01 16:42:55 (Borland C++ 5.5.1)
  */
 
 #include "hbvmpub.h"
@@ -455,7 +455,7 @@ HB_FUNC( MAIN )
 	HB_P_POPVARIABLE, 22, 0,	/* SISTEMA */
 /* 00250 */ HB_P_LINEOFFSET, 20,	/* 46 */
 	HB_P_PUSHSTRSHORT, 10,	/* 10 */
-	'v', '2', '3', '.', '1', '0', '.', '1', '8', 0, 
+	'v', '2', '3', '.', '1', '2', '.', '0', '1', 0, 
 	HB_P_POPVARIABLE, 13, 0,	/* MVERSAO */
 /* 00267 */ HB_P_LINEOFFSET, 22,	/* 48 */
 	HB_P_PUSHSYMNEAR, 42,	/* SETCOLOR */
